@@ -1,6 +1,3 @@
-@use "../helpers/missing-dependencies";
-@use "replace";
-
 ///
 /// Removes value(s) `$value` from `$list`.
 ///
@@ -19,9 +16,9 @@
 ///
 
 @function sl-remove($list, $value) {
-  $_: missing-dependencies.sl-missing-dependencies('sl-replace');
+  $_: sl-missing-dependencies('sl-replace');
 
-  @return replace.sl-replace($list, $value, null);
+  @return sl-replace($list, $value, null);
 }
 
 ///

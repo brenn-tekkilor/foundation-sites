@@ -28,6 +28,8 @@ $global-font-size: 100% !default;
 /// @returns {List} A list of converted values.
 @function rem-calc($values, $base: null) {
   $rem-values: ();
+  @debug $values;
+  @debug list.length($values);
   $count: list.length($values);
 
   // If no base is defined, defer to the global font size

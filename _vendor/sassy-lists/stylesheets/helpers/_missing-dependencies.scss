@@ -1,5 +1,3 @@
-@use "sass:list";
-@use "sass:meta";
 ///
 /// Checks whether `$functions` exist in global scope.
 ///
@@ -14,14 +12,14 @@
   $missing-dependencies: ();
   
   @each $function in $functions {
-    @if not meta.function-exists($function) {
-      $missing-dependencies: list.append($missing-dependencies, $function, comma);
+    @if not function-exists($function) {
+      $missing-dependencies: append($missing-dependencies, $function, comma);
     }
   }
   
-  @if list.length($missing-dependencies) > 0 {
+  @if length($missing-dependencies) > 0 {
     @error 'Unmet dependencies! The following functions are required: #{$missing-dependencies}.';
   }
 
-  @return list.length($missing-dependencies) > 0;
+  @return length($missing-dependencies) > 0;
 }

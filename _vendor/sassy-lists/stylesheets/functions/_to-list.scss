@@ -1,4 +1,3 @@
-@use "sass:list";
 ///
 /// Casts `$value` into a list.
 ///
@@ -14,8 +13,8 @@
 /// @return {List}
 ///
 
-@function sl-to-list($value, $separator: list.separator($value)) {
-  @return list.join((), $value, $separator);
+@function sl-to-list($value, $separator: list-separator($value)) {
+  @return join((), $value, $separator);
 }
 
 ///
