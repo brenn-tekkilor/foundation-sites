@@ -1,3 +1,8 @@
+@use "sass:meta";
+@use "../global";
+@use "../util/breakpoint";
+@use "../util/mixins";
+
 // Foundation for Sites
 // https://get.foundation
 // Licensed under MIT Open Source
@@ -20,11 +25,11 @@ $offcanvas-vertical-sizes: (
 
 /// Background color of an off-canvas panel.
 /// @type Color
-$offcanvas-background: $light-gray !default;
+$offcanvas-background: global.$light-gray !default;
 
 /// Box shadow for the off-canvas overlap panel.
 /// @type Shadow
-$offcanvas-shadow: 0 0 10px rgba($black, 0.7) !default;
+$offcanvas-shadow: 0 0 10px rgba(global.$black, 0.7) !default;
 
 /// Inner box shadow size for the off-canvas push panel.
 /// @type Number
@@ -32,7 +37,7 @@ $offcanvas-inner-shadow-size: 20px !default;
 
 /// Inner box shadow color for the off-canvas push panel.
 /// @type Color
-$offcanvas-inner-shadow-color: rgba($black, 0.25) !default;
+$offcanvas-inner-shadow-color: rgba(global.$black, 0.25) !default;
 
 /// Z-index of an off-canvas content overlay.
 /// @type Number
@@ -64,7 +69,7 @@ $offcanvas-fixed-reveal: true !default;
 
 /// Background color for the overlay that appears when an off-canvas panel is open.
 /// @type Color
-$offcanvas-exit-background: rgba($white, 0.25) !default;
+$offcanvas-exit-background: rgba(global.$white, 0.25) !default;
 
 /// CSS class used for the main content area. The off-canvas mixins use this to target the page content.
 $maincontent-class: 'off-canvas-content' !default;
@@ -73,11 +78,11 @@ $maincontent-class: 'off-canvas-content' !default;
 @mixin off-canvas-basics {
 
   /// Transform deprecated size settings into map & show warning
-  @if variable-exists(offcanvas-size) {
+  @if meta.variable-exists(offcanvas-size) {
     $offcanvas-sizes: (small: $offcanvas-size, medium: $offcanvas-size) !global;
     @warn '$offcanvas-size is deprecated and not used anymore! Please update your settings and use the map $offcanvas-sizes instead';
   }
-  @if variable-exists(offcanvas-vertical-size) {
+  @if meta.variable-exists(offcanvas-vertical-size) {
     $offcanvas-vertical-sizes: (small: $offcanvas-vertical-size, medium: $offcanvas-vertical-size) !global;
     @warn '$offcanvas-vertical-size is deprecated and not used anymore! Please update your settings and use the map $offcanvas-vertical-sizes instead';
   }
@@ -143,7 +148,7 @@ $maincontent-class: 'off-canvas-content' !default;
   $transition: $offcanvas-transition-length $offcanvas-transition-timing,
   $fixed: true
 ) {
-  @include disable-mouse-outline;
+  @include mixins.disable-mouse-outline;
 
   @if $fixed == true {
     position: fixed;
@@ -198,7 +203,7 @@ $maincontent-class: 'off-canvas-content' !default;
     overflow-y: auto;
 
     @each $name, $size in $sizes {
-      @include breakpoint($name) {
+      @include breakpoint.breakpoint($name) {
         width: $size;
         transform: translateX(-$size);
       }
@@ -208,7 +213,7 @@ $maincontent-class: 'off-canvas-content' !default;
     @at-root .#{$maincontent-class} .off-canvas.position-#{$position} {
 
       @each $name, $size in $sizes {
-        @include breakpoint($name) {
+        @include breakpoint.breakpoint($name) {
           transform: translateX(-$size);
         }
       }
@@ -221,7 +226,7 @@ $maincontent-class: 'off-canvas-content' !default;
     @at-root .#{$maincontent-class}.is-open-#{$position} {
       &.has-transition-push {
         @each $name, $size in $sizes {
-          @include breakpoint($name) {
+          @include breakpoint.breakpoint($name) {
             transform: translateX($size);
           }
         }
@@ -235,7 +240,7 @@ $maincontent-class: 'off-canvas-content' !default;
     overflow-y: auto;
 
     @each $name, $size in $sizes {
-      @include breakpoint($name) {
+      @include breakpoint.breakpoint($name) {
         width: $size;
         transform: translateX($size);
       }
@@ -245,7 +250,7 @@ $maincontent-class: 'off-canvas-content' !default;
     @at-root .#{$maincontent-class} .off-canvas.position-#{$position} {
 
       @each $name, $size in $sizes {
-        @include breakpoint($name) {
+        @include breakpoint.breakpoint($name) {
           transform: translateX($size);
         }
       }
@@ -258,7 +263,7 @@ $maincontent-class: 'off-canvas-content' !default;
     @at-root .#{$maincontent-class}.is-open-#{$position} {
       &.has-transition-push {
         @each $name, $size in $sizes {
-          @include breakpoint($name) {
+          @include breakpoint.breakpoint($name) {
             transform: translateX(-$size);
           }
         }
@@ -272,7 +277,7 @@ $maincontent-class: 'off-canvas-content' !default;
     overflow-x: auto;
 
     @each $name, $size in $sizes {
-      @include breakpoint($name) {
+      @include breakpoint.breakpoint($name) {
         height: $size;
         transform: translateY(-$size);
       }
@@ -281,7 +286,7 @@ $maincontent-class: 'off-canvas-content' !default;
     // Sets the position for nested off-canvas element
     @at-root .#{$maincontent-class} .off-canvas.position-#{$position} {
       @each $name, $size in $sizes {
-        @include breakpoint($name) {
+        @include breakpoint.breakpoint($name) {
           transform: translateY(-$size);
         }
       }
@@ -294,7 +299,7 @@ $maincontent-class: 'off-canvas-content' !default;
     @at-root .#{$maincontent-class}.is-open-#{$position} {
       &.has-transition-push {
         @each $name, $size in $sizes {
-          @include breakpoint($name) {
+          @include breakpoint.breakpoint($name) {
             transform: translateY($size);
           }
         }
@@ -308,7 +313,7 @@ $maincontent-class: 'off-canvas-content' !default;
     overflow-x: auto;
 
     @each $name, $size in $sizes {
-      @include breakpoint($name) {
+      @include breakpoint.breakpoint($name) {
         height: $size;
         transform: translateY($size);
       }
@@ -317,7 +322,7 @@ $maincontent-class: 'off-canvas-content' !default;
     // Sets the position for nested off-canvas element
     @at-root .#{$maincontent-class} .off-canvas.position-#{$position} {
       @each $name, $size in $sizes {
-        @include breakpoint($name) {
+        @include breakpoint.breakpoint($name) {
           transform: translateY($size);
         }
       }
@@ -330,7 +335,7 @@ $maincontent-class: 'off-canvas-content' !default;
     @at-root .#{$maincontent-class}.is-open-#{$position} {
       &.has-transition-push {
         @each $name, $size in $sizes {
-          @include breakpoint($name) {
+          @include breakpoint.breakpoint($name) {
             transform: translateY(-$size);
           }
         }
@@ -343,16 +348,16 @@ $maincontent-class: 'off-canvas-content' !default;
   @if $offcanvas-inner-shadow-size {
     &.is-transition-push {
       @if $position == left {
-        @include inner-side-shadow(right, $offcanvas-inner-shadow-size, $offcanvas-inner-shadow-color);
+        @include mixins.inner-side-shadow(right, $offcanvas-inner-shadow-size, $offcanvas-inner-shadow-color);
       }
       @else if $position == right {
-        @include inner-side-shadow(left, $offcanvas-inner-shadow-size, $offcanvas-inner-shadow-color);
+        @include mixins.inner-side-shadow(left, $offcanvas-inner-shadow-size, $offcanvas-inner-shadow-color);
       }
       @else if $position == top {
-        @include inner-side-shadow(bottom, $offcanvas-inner-shadow-size, $offcanvas-inner-shadow-color);
+        @include mixins.inner-side-shadow(bottom, $offcanvas-inner-shadow-size, $offcanvas-inner-shadow-color);
       }
       @else if $position == bottom {
-        @include inner-side-shadow(top, $offcanvas-inner-shadow-size, $offcanvas-inner-shadow-color);
+        @include mixins.inner-side-shadow(top, $offcanvas-inner-shadow-size, $offcanvas-inner-shadow-color);
       }
     }
   }
@@ -407,12 +412,12 @@ $breakpoint: small
   }
 
   @at-root .#{$content}.has-reveal-#{$position} {
-    margin-#{$position}: -zf-get-bp-val($offcanvas-sizes, $breakpoint);
+    margin-#{$position}: breakpoint.zf-get-bp-val($offcanvas-sizes, $breakpoint);
   }
 
   // backwards compatibility (prior to v6.4)
   & ~ .#{$content} {
-    margin-#{$position}: -zf-get-bp-val($offcanvas-sizes, $breakpoint);
+    margin-#{$position}: breakpoint.zf-get-bp-val($offcanvas-sizes, $breakpoint);
   }
 }
 
@@ -475,9 +480,9 @@ $breakpoint: small
   }
 
   // Reveal off-canvas panel on larger screens
-  @each $name, $value in $breakpoint-classes {
-    @if $name != $-zf-zero-breakpoint {
-      @include breakpoint($name) {
+  @each $name, $value in breakpoint.$breakpoint-classes {
+    @if $name != breakpoint.$zf-zero-breakpoint {
+      @include breakpoint.breakpoint($name) {
         .position-left.reveal-for-#{$name} {
           @include off-canvas-reveal(left, $offcanvas-reveal-zindex, $maincontent-class, $name);
         }
@@ -498,9 +503,9 @@ $breakpoint: small
   }
 
   // Move in-canvas for larger screens
-  @each $name, $value in $breakpoint-classes {
-    @if $name != $-zf-zero-breakpoint {
-      @include breakpoint($name) {
+  @each $name, $value in breakpoint.$breakpoint-classes {
+    @if $name != breakpoint.$zf-zero-breakpoint {
+      @include breakpoint.breakpoint($name) {
         .off-canvas.in-canvas-for-#{$name} {
           @include in-canvas;
         }

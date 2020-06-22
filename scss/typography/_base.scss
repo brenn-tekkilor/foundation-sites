@@ -1,3 +1,12 @@
+@use "sass:color";
+@use "sass:map";
+@use "sass:meta";
+@use "../global";
+@use "../util/breakpoint";
+@use "../util/color" as color2;
+@use "../util/unit";
+@use "../util/value";
+
 // Foundation for Sites
 // https://get.foundation
 // Licensed under MIT Open Source
@@ -24,11 +33,11 @@
 
 /// Font family for header elements.
 /// @type String | List
-$header-font-family: $body-font-family !default;
+$header-font-family: global.$body-font-family !default;
 
 /// Font weight of headers.
 /// @type String
-$header-font-weight: $global-weight-normal !default;
+$header-font-weight: global.$global-weight-normal !default;
 
 /// Font style (e.g. italicized) of headers.
 /// @type String
@@ -79,15 +88,15 @@ $header-styles: (
   @each $size, $headers in $header-sizes {
     $header-map: ();
     @each $header, $font-size in $headers {
-      $header-map: map-merge($header-map, ($header: ('font-size': $font-size)));
+      $header-map: map.merge($header-map, ($header: ('font-size': $font-size)));
     }
-    $header-styles: map-merge($header-styles, ($size: $header-map));
+    $header-styles: map.merge($header-styles, ($size: $header-map));
   }
   @return $header-styles;
 }
 
 // If it exists $headers-sizes is used to build $header-styles. See the documentation.
-@if variable-exists(header-sizes) {
+@if meta.variable-exists(header-sizes) {
   $header-styles: build_from_header-sizes($header-sizes);
 }
 
@@ -101,7 +110,7 @@ $small-font-size: 80% !default;
 
 /// Color of `<small>` elements when placed inside headers.
 /// @type Color
-$header-small-font-color: $medium-gray !default;
+$header-small-font-color: global.$medium-gray !default;
 
 /// Line height of text inside `<p>` elements.
 /// @type Number
@@ -121,11 +130,11 @@ $enable-code-inline: true;
 
 /// Default color for links.
 /// @type Color
-$anchor-color: $primary-color !default;
+$anchor-color: color2.$primary-color !default;
 
 /// Default color for links on hover.
 /// @type Color
-$anchor-color-hover: scale-color($anchor-color, $lightness: -14%) !default;
+$anchor-color-hover: color.scale($anchor-color, $lightness: -14%) !default;
 
 /// Default text decoration for links.
 /// @type String
@@ -137,15 +146,15 @@ $anchor-text-decoration-hover: none !default;
 
 /// Maximum width of a divider.
 /// @type Number
-$hr-width: $global-width !default;
+$hr-width: global.$global-width !default;
 
 /// Default border for a divider.
 /// @type List
-$hr-border: 1px solid $medium-gray !default;
+$hr-border: 1px solid global.$medium-gray !default;
 
 /// Default margin for a divider.
 /// @type Number | List
-$hr-margin: rem-calc(20) auto !default;
+$hr-margin: unit.rem-calc(20) auto !default;
 
 /// Line height for items in a list.
 /// @type Number
@@ -177,7 +186,7 @@ $defnlist-margin-bottom: 1rem !default;
 
 /// Font weight for `<dt>` elements.
 /// @type String
-$defnlist-term-weight: $global-weight-bold !default;
+$defnlist-term-weight: global.$global-weight-bold !default;
 
 /// Spacing between `<dt>` and `<dd>` elements.
 /// @type Number
@@ -185,15 +194,15 @@ $defnlist-term-margin-bottom: 0.3rem !default;
 
 /// Text color of `<blockquote>` elements.
 /// @type Color
-$blockquote-color: $dark-gray !default;
+$blockquote-color: global.$dark-gray !default;
 
 /// Padding inside a `<blockquote>` element.
 /// @type Number | List
-$blockquote-padding: rem-calc(9 20 0 19) !default;
+$blockquote-padding: unit.rem-calc(9 20 0 19) !default;
 
 /// Side border for `<blockquote>` elements.
 /// @type List
-$blockquote-border: 1px solid $medium-gray !default;
+$blockquote-border: 1px solid global.$medium-gray !default;
 
 /// Use the `.cite-block` component as default for `<cite>` elements.
 /// @type Boolean
@@ -205,23 +214,23 @@ $keystroke-font: $font-family-monospace !default;
 
 /// Text color for `<kbd>` elements.
 /// @type Color
-$keystroke-color: $black !default;
+$keystroke-color: global.$black !default;
 
 /// Background color for `<kbd>` elements.
 /// @type Color
-$keystroke-background: $light-gray !default;
+$keystroke-background: global.$light-gray !default;
 
 /// Padding for `<kbd>` elements.
 /// @type Number | List
-$keystroke-padding: rem-calc(2 4 0) !default;
+$keystroke-padding: unit.rem-calc(2 4 0) !default;
 
 /// Border radius for `<kbd>` elements.
 /// @type Number | List
-$keystroke-radius: $global-radius !default;
+$keystroke-radius: global.$global-radius !default;
 
 /// Bottom border style for `<abbr>` elements.
 /// @type List
-$abbr-underline: 1px dotted $black !default;
+$abbr-underline: 1px dotted global.$black !default;
 
 @mixin foundation-typography-base {
   // Typography resets
@@ -267,7 +276,7 @@ $abbr-underline: 1px dotted $black !default;
   // Strong text
   strong,
   b {
-    font-weight: $global-weight-bold;
+    font-weight: global.$global-weight-bold;
     line-height: inherit;
   }
 
@@ -298,41 +307,41 @@ $abbr-underline: 1px dotted $black !default;
 
   // Heading styles
   @each $size, $headers in $header-styles {
-    @include breakpoint($size) {
+    @include breakpoint.breakpoint($size) {
       @each $header, $header-defs in $headers {
         $font-size-temp: 1rem;
         #{$header}, .#{$header} {
 
-          @if map-has-key($header-defs, font-size) {
-            $font-size-temp: rem-calc(map-get($header-defs, font-size));
+          @if map.has-key($header-defs, font-size) {
+            $font-size-temp: unit.rem-calc(map.get($header-defs, font-size));
             font-size: $font-size-temp;
-          } @else if map-has-key($header-defs, fs) {
-            $font-size-temp: rem-calc(map-get($header-defs, fs));
+          } @else if map.has-key($header-defs, fs) {
+            $font-size-temp: unit.rem-calc(map.get($header-defs, fs));
             font-size: $font-size-temp;
-          } @else if $size == $-zf-zero-breakpoint {
+          } @else if $size == breakpoint.$zf-zero-breakpoint {
             font-size: $font-size-temp;
           }
-          @if map-has-key($header-defs, line-height) {
-            line-height: unitless-calc(map-get($header-defs, line-height), $font-size-temp);
-          } @else if map-has-key($header-defs, lh) {
-            line-height: unitless-calc(map-get($header-defs, lh), $font-size-temp);
-          } @else if $size == $-zf-zero-breakpoint {
-            line-height: unitless-calc($header-lineheight, $font-size-temp);
+          @if map.has-key($header-defs, line-height) {
+            line-height: unit.unitless-calc(map.get($header-defs, line-height), $font-size-temp);
+          } @else if map.has-key($header-defs, lh) {
+            line-height: unit.unitless-calc(map.get($header-defs, lh), $font-size-temp);
+          } @else if $size == breakpoint.$zf-zero-breakpoint {
+            line-height: unit.unitless-calc($header-lineheight, $font-size-temp);
           }
 
-          @if map-has-key($header-defs, margin-top) {
-            margin-top: rem-calc(map-get($header-defs, margin-top));
-          } @else if map-has-key($header-defs, mt) {
-            margin-top: rem-calc(map-get($header-defs, mt));
-          } @else if $size == $-zf-zero-breakpoint {
+          @if map.has-key($header-defs, margin-top) {
+            margin-top: unit.rem-calc(map.get($header-defs, margin-top));
+          } @else if map.has-key($header-defs, mt) {
+            margin-top: unit.rem-calc(map.get($header-defs, mt));
+          } @else if $size == breakpoint.$zf-zero-breakpoint {
             margin-top: 0;
           }
-          @if map-has-key($header-defs, margin-bottom) {
-            margin-bottom: rem-calc(map-get($header-defs, margin-bottom));
-          } @else if map-has-key($header-defs, mb) {
-            margin-bottom: rem-calc(map-get($header-defs, mb));
-          } @else if $size == $-zf-zero-breakpoint {
-            margin-bottom: rem-calc($header-margin-bottom);
+          @if map.has-key($header-defs, margin-bottom) {
+            margin-bottom: unit.rem-calc(map.get($header-defs, margin-bottom));
+          } @else if map.has-key($header-defs, mb) {
+            margin-bottom: unit.rem-calc(map.get($header-defs, mb));
+          } @else if $size == breakpoint.$zf-zero-breakpoint {
+            margin-bottom: unit.rem-calc($header-margin-bottom);
           }
         }
       }
@@ -390,19 +399,19 @@ $abbr-underline: 1px dotted $black !default;
 
   // Unordered lists
   ul {
-    margin-#{$global-left}: $list-side-margin;
+    margin-#{global.$global-left}: $list-side-margin;
     list-style-type: $list-style-type;
   }
 
   // Ordered lists
   ol {
-    margin-#{$global-left}: $list-side-margin;
+    margin-#{global.$global-left}: $list-side-margin;
   }
 
   // Nested unordered/ordered lists
   ul, ol {
     & & {
-      margin-#{$global-left}: $list-nested-side-margin;
+      margin-#{global.$global-left}: $list-nested-side-margin;
       margin-bottom: 0;
     }
   }
@@ -421,7 +430,7 @@ $abbr-underline: 1px dotted $black !default;
   blockquote {
     margin: 0 0 $paragraph-margin-bottom;
     padding: $blockquote-padding;
-    border-#{$global-left}: $blockquote-border;
+    border-#{global.$global-left}: $blockquote-border;
 
     &, p {
       line-height: $paragraph-lineheight;
@@ -467,7 +476,7 @@ $abbr-underline: 1px dotted $black !default;
     font-family: $keystroke-font;
     color: $keystroke-color;
 
-    @if has-value($keystroke-radius) {
+    @if value.has-value($keystroke-radius) {
       border-radius: $keystroke-radius;
     }
   }

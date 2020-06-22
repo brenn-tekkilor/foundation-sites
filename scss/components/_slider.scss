@@ -1,3 +1,8 @@
+@use "sass:color";
+@use "../forms/range";
+@use "../global";
+@use "../util/mixins";
+
 // Foundation for Sites
 // https://get.foundation
 // Licensed under MIT Open Source
@@ -20,11 +25,11 @@ $slider-transition: all 0.2s ease-in-out !default;
 /// Adds the general styles for sliders.
 @mixin slider-container {
   position: relative;
-  height: $slider-height;
+  height: range.$slider-height;
   margin-top: 1.25rem;
   margin-bottom: 2.25rem;
 
-  background-color: $slider-background;
+  background-color: range.$slider-background;
   cursor: pointer;
   user-select: none;
   touch-action: none;
@@ -38,9 +43,9 @@ $slider-transition: all 0.2s ease-in-out !default;
 
   display: inline-block;
   max-width: 100%;
-  height: $slider-height;
+  height: range.$slider-height;
 
-  background-color: $slider-fill-background;
+  background-color: range.$slider-fill-background;
   transition: $slider-transition;
 
   &.is-dragging {
@@ -50,22 +55,22 @@ $slider-transition: all 0.2s ease-in-out !default;
 
 /// Adds the general styles for the slider handles.
 @mixin slider-handle {
-  @include disable-mouse-outline;
-  @include vertical-center;
+  @include mixins.disable-mouse-outline;
+  @include mixins.vertical-center;
   left: 0;
   z-index: 1;
 
   display: inline-block;
-  width: $slider-handle-width;
-  height: $slider-handle-height;
+  width: range.$slider-handle-width;
+  height: range.$slider-handle-height;
 
-  border-radius: $slider-radius;
-  background-color: $slider-handle-background;
+  border-radius: range.$slider-radius;
+  background-color: range.$slider-handle-background;
   transition: $slider-transition;
   touch-action: manipulation;
 
   &:hover {
-    background-color: scale-color($slider-handle-background, $lightness: -15%);
+    background-color: color.scale(range.$slider-handle-background, $lightness: -15%);
   }
 
   &.is-dragging {
@@ -74,7 +79,7 @@ $slider-transition: all 0.2s ease-in-out !default;
 }
 
 @mixin slider-disabled {
-  opacity: $slider-opacity-disabled;
+  opacity: range.$slider-opacity-disabled;
   cursor: not-allowed;
 }
 
@@ -95,8 +100,8 @@ $slider-transition: all 0.2s ease-in-out !default;
     position: absolute;
     top: 0;
     left: 50%;
-    width: $slider-handle-height;
-    height: $slider-handle-width;
+    width: range.$slider-handle-height;
+    height: range.$slider-handle-width;
     transform: translateX(-50%);
   }
 }
@@ -129,7 +134,7 @@ $slider-transition: all 0.2s ease-in-out !default;
   }
 
   // RTL support
-  @if $global-text-direction == rtl {
+  @if global.$global-text-direction == rtl {
     .slider:not(.vertical) {
       transform: scale(-1, 1);
     }

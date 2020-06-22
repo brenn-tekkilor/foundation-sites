@@ -1,3 +1,9 @@
+@use "sass:color";
+@use "../global";
+@use "../util/color" as color2;
+@use "../util/mixins";
+@use "../util/unit";
+
 // Foundation for Sites
 // https://get.foundation
 // Licensed under MIT Open Source
@@ -12,26 +18,26 @@ $tab-margin: 0 !default;
 
 /// Default background color of a tab bar.
 /// @type Color
-$tab-background: $white !default;
+$tab-background: global.$white !default;
 
 /// Font color of tab item.
 /// @type Color
-$tab-color: $primary-color !default;
+$tab-color: color2.$primary-color !default;
 
 /// Active background color of a tab bar.
 /// @type Color
-$tab-background-active: $light-gray !default;
+$tab-background-active: global.$light-gray !default;
 
 /// Active font color of tab item.
 /// @type Color
-$tab-active-color: $primary-color !default;
+$tab-active-color: color2.$primary-color !default;
 
 /// Font size of tab items.
 /// @type Number
-$tab-item-font-size: rem-calc(12) !default;
+$tab-item-font-size: unit.rem-calc(12) !default;
 
 /// Default background color on hover for items in a Menu.
-$tab-item-background-hover: $white !default;
+$tab-item-background-hover: global.$white !default;
 
 /// Default padding of a tab item.
 /// @type Number
@@ -39,15 +45,15 @@ $tab-item-padding: 1.25rem 1.5rem !default;
 
 /// Default background color of tab content.
 /// @type Color
-$tab-content-background: $white !default;
+$tab-content-background: global.$white !default;
 
 /// Default border color of tab content.
 /// @type Color
-$tab-content-border: $light-gray !default;
+$tab-content-border: global.$light-gray !default;
 
 /// Default text color of tab content.
 /// @type Color
-$tab-content-color: $body-font-color !default;
+$tab-content-color: global.$body-font-color !default;
 
 /// Default padding for tab content.
 /// @type Number | List
@@ -59,7 +65,7 @@ $tab-content-padding: 1rem !default;
   $background: $tab-background,
   $border-color: $tab-content-border
 ) {
-  @include clearfix;
+  @include mixins.clearfix;
   margin: $margin;
   border: 1px solid $border-color;
   background: $background;
@@ -84,10 +90,10 @@ $tab-content-padding: 1rem !default;
   $background-hover: $tab-item-background-hover,
   $background-active: $tab-background-active
 ) {
-  float: #{$global-left};
+  float: #{global.$global-left};
 
   > a {
-    @include disable-mouse-outline;
+    @include mixins.disable-mouse-outline;
     display: block;
     padding: $padding;
     font-size: $font-size;
@@ -96,7 +102,7 @@ $tab-content-padding: 1rem !default;
 
     &:hover {
       background: $background-hover;
-      color: scale-color($color, $lightness: -14%);
+      color: color.scale($color, $lightness: -14%);
     }
 
     &:focus,
@@ -125,7 +131,7 @@ $tab-content-padding: 1rem !default;
   $border-color: $tab-content-border
 ) {
   border: 1px solid $border-color;
-  border-#{$global-left}: 0;
+  border-#{global.$global-left}: 0;
 }
 
 /// Adds styles for an individual tab content panel within the tab content container.
@@ -163,14 +169,14 @@ $tab-content-padding: 1rem !default;
 
   // Primary color
   .tabs.primary {
-    background: $primary-color;
+    background: color2.$primary-color;
 
     > li > a {
-      color: color-pick-contrast($primary-color);
+      color: color2.color-pick-contrast(color2.$primary-color);
 
       &:hover,
       &:focus {
-        background: smart-scale($primary-color);
+        background: color2.smart-scale(color2.$primary-color);
       }
     }
   }

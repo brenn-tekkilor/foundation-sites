@@ -1,3 +1,8 @@
+@use "sass:meta";
+@use "../util/breakpoint";
+@use "../util/mixins";
+@use "../util/unit";
+
 /// Modifies a grid to give it "frame" behavior (no overflow, no wrap, stretch behavior)
 ///
 /// @param {Boolean} $vertical [false] - Is grid vertical or horizontal. Should match grid.
@@ -20,23 +25,23 @@
     align-items: stretch;
   }
 
-  @if $breakpoint == null and type-of($gutters) == 'map' {
-    @include -zf-each-breakpoint() {
-      @include xy-grid-frame($vertical, $nested, $gutters, $-zf-size, false);
+  @if $breakpoint == null and meta.type-of($gutters) == 'map' {
+    @include mixins.zf-each-breakpoint() {
+      @include xy-grid-frame($vertical, $nested, $gutters, mixins.$zf-size, false);
     }
   } @else {
     // Get our gutters if applicable
-    $gutter: -zf-get-bp-val($gutters, $breakpoint);
+    $gutter: breakpoint.zf-get-bp-val($gutters, $breakpoint);
 
     // If we have a gutter, add it to the width/height
     @if $gutter {
       @if $vertical == true {
         $unit: if($nested == true, 100%, 100vh);
-        $gutter: rem-calc($gutter);
+        $gutter: unit.rem-calc($gutter);
         height: calc(#{$unit} + #{$gutter});
       } @else {
         $unit: if($nested == true, 100%, 100vw);
-        $gutter: rem-calc($gutter);
+        $gutter: unit.rem-calc($gutter);
         width: calc(#{$unit} + #{$gutter});
       }
     }

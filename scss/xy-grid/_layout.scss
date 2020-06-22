@@ -1,3 +1,7 @@
+@use "sass:math";
+@use "cell";
+@use "xy-grid";
+
 // Foundation for Sites
 // https://get.foundation
 // Licensed under MIT Open Source
@@ -21,16 +25,16 @@
   $n,
   $selector: '.cell',
   $gutter-output: null,
-  $gutters: $grid-margin-gutters,
+  $gutters: xy-grid.$grid-margin-gutters,
   $gutter-type: margin,
   $gutter-position: null,
   $breakpoint: null,
   $vertical: false,
   $output: (base size gutters)
 ) {
-  $size: percentage(1/$n);
+  $size: math.percentage(1/$n);
 
   & > #{$selector} {
-    @include xy-cell($size, $gutter-output, $gutters, $gutter-type, $gutter-position, $breakpoint, $vertical, $output);
+    @include cell.xy-cell($size, $gutter-output, $gutters, $gutter-type, $gutter-position, $breakpoint, $vertical, $output);
   }
 }

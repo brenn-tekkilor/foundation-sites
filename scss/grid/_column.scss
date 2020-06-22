@@ -1,3 +1,11 @@
+@use "../global";
+@use "../util/math";
+@use "grid";
+@use "gutter";
+@use "position";
+@use "row";
+@use "size";
+
 // Foundation for Sites
 // https://get.foundation
 // Licensed under MIT Open Source
@@ -16,7 +24,7 @@
 ///
 /// @returns {Number} A calculated percentage value.
 @function grid-column($columns) {
-  @return fraction-to-percentage($columns, $denominator: $grid-column-count);
+  @return math.fraction-to-percentage($columns, $denominator: row.$grid-column-count);
 }
 
 /// Creates a grid column.
@@ -24,26 +32,26 @@
 /// @param {Mixed} $columns [$grid-column-count] - Width of the column. Refer to the `grid-column()` function to see possible values.
 /// @param {Mixed} $gutters [$grid-column-gutter] - Spacing between columns. Refer to the `grid-column-gutter()` function to see possible values.
 @mixin grid-column(
-  $columns: $grid-column-count,
-  $gutters: $grid-column-gutter
+  $columns: row.$grid-column-count,
+  $gutters: grid.$grid-column-gutter
 ) {
-  @include grid-column-size($columns);
-  float: $global-left;
+  @include size.grid-column-size($columns);
+  float: global.$global-left;
 
   // Gutters
-  @include grid-column-gutter($gutters: $gutters);
+  @include gutter.grid-column-gutter($gutters: $gutters);
 
   // Position
-  @include grid-col-pos(auto);
+  @include position.grid-col-pos(auto);
 }
 
 /// Creates a grid column row. This is the equivalent of adding `.row` and `.column` to the same element.
 ///
 /// @param {Mixed} $gutters [$grid-column-gutter] - Width of the gutters on either side of the column row. Refer to the `grid-column-gutter()` function to see possible values.
 @mixin grid-column-row(
-  $gutters: $grid-column-gutter
+  $gutters: grid.$grid-column-gutter
 ) {
-  @include grid-row;
+  @include row.grid-row;
   @include grid-column($gutters: $gutters);
 
   &,
@@ -55,7 +63,7 @@
 /// Shorthand for `grid-column()`.
 /// @alias grid-column
 @function grid-col(
-  $columns: $grid-column-count
+  $columns: row.$grid-column-count
 ) {
   @return grid-column($columns);
 }
@@ -63,8 +71,8 @@
 /// Shorthand for `grid-column()`.
 /// @alias grid-column
 @mixin grid-col(
-  $columns: $grid-column-count,
-  $gutters: $grid-column-gutter
+  $columns: row.$grid-column-count,
+  $gutters: grid.$grid-column-gutter
 ) {
   @include grid-column($columns, $gutters);
 }
@@ -72,7 +80,7 @@
 /// Shorthand for `grid-column-row()`.
 /// @alias grid-column-row
 @mixin grid-col-row(
-  $gutters: $grid-column-gutter
+  $gutters: grid.$grid-column-gutter
 ) {
   @include grid-column-row($gutters);
 }
