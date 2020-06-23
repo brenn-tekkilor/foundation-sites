@@ -1,7 +1,13 @@
+@use "sass:color";
+// Foundation for Sites
+// https://get.foundation
+// Licensed under MIT Open Source
+// sass-lint:disable no-color-literals, no-qualifying-elements
 //  Foundation for Sites Settings
 //  -----------------------------
 //
-//  Table of Contents:
+@use '../util';
+// #region Table of Contents:
 //
 //   1. Global
 //   2. Breakpoints
@@ -59,837 +65,3669 @@
 //  54. Tooltip
 //  55. Top Bar
 //  56. Xy Grid
-
-@import 'util/util';
-
-// 1. Global
+// #endregion
+// #region 1. Global Variables
 // ---------
+/// Font size attribute applied to `<html>` and `<body>`. We use 100% by default so the value is inherited from the user's browser settings.
+/// @type Number
+$-global-font-size: 100%;
+/// Global width of your site. Used by the grid to determine row width.
+/// @type Number
+$-global-width: unit.rem-calc(1200);
+/// Default line height for all type. `$global-lineheight` is 24px while `$global-font-size` is 16px
+/// @type Number
+$-global-lineheight: 1.5;
+/// Colors used for buttons, callouts, links, etc. There must always be a color called `primary`.
+/// @type Map
+$-foundation-palette: ( primary: #1779ba, secondary: #767676, success: #3adb76, warning: #ffae00, alert: #cc4b37, );
+/// Color used for light gray UI items.
+/// @type Color
+$-light-gray: #e6e6e6;
+/// Color used for medium gray UI items.
+/// @type Color
+$-medium-gray: #cacaca;
+/// Color used for dark gray UI items.
+/// @type Color
+$-dark-gray: #8a8a8a;
+/// Color used for black ui items.
+/// @type Color
+$-black: #0a0a0a;
+/// Color used for white ui items.
+/// @type Color
+$-white: #fefefe;
+/// Background color of the body.
+/// @type Color
+$-body-background: $white;
+/// Text color of the body.
+/// @type Color
+$-body-font-color: $black;
+/// Font stack of the body.
+/// @type List
+$body-font-family: 'Helvetica Neue',
+Helvetica,
+Roboto,
+Arial,
+sans-serif;
+/// Set to `true` to enable antialiased type, using the `-webkit-font-smoothing` and `-moz-osx-font-smoothing` CSS properties.
+/// @type Boolean
+$-body-antialiased: true;
+/// Global value used for margin on components.
+/// @type Number
+$-global-margin: 1rem;
+/// Global value used for padding on components.
+/// @type Number
+$-global-padding: 1rem;
+/// Global value used for positioning on components.
+/// @type Number
+$-global-position: 1rem;
+/// Global font weight used for normal type.
+/// @type Keyword | Number
+$-global-weight-normal: normal;
+/// Global font weight used for bold type.
+/// @type Keyword | Number
+$-global-weight-bold: bold;
+/// Global value used for all elements that have a border radius.
+/// @type Number
+$-global-radius: 0;
+/// Global value used for all menu styles. Can be overwritten at individual menu component level.
+/// @type Number
+$-global-menu-padding: 0.7rem 1rem;
+/// Global value used for all menu styles. Nested margin for submenu.
+$-global-menu-nested-margin: 1rem;
+/// Sets the text direction of the CSS. Can be either `ltr` or `rtl`.
+/// @type Keyword
+$-global-text-direction: ltr;
+/// Enables flexbox for components that support it.
+/// @type Boolean
+$-global-flexbox: true;
+/// Enabled responsive breakpoints for prototypes if applicable
+/// @type Boolean
+$-global-prototype-breakpoints: false;
+/// Button cursor's value, `auto` by default
+/// @type Keyword
+$-global-button-cursor: auto;
+@if not map.has-key($foundation-palette, primary) {
+    @error 'In $foundation-palette, you must have a color named "primary".';
+}
 
-$global-font-size: 100%;
-$global-width: rem-calc(1200);
-$global-lineheight: 1.5;
-$foundation-palette: (
-  primary: #1779ba,
-  secondary: #767676,
-  success: #3adb76,
-  warning: #ffae00,
-  alert: #cc4b37,
-);
-$light-gray: #e6e6e6;
-$medium-gray: #cacaca;
-$dark-gray: #8a8a8a;
-$black: #0a0a0a;
-$white: #fefefe;
-$body-background: $white;
-$body-font-color: $black;
-$body-font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif;
-$body-antialiased: true;
-$global-margin: 1rem;
-$global-padding: 1rem;
-$global-position: 1rem;
-$global-weight-normal: normal;
-$global-weight-bold: bold;
-$global-radius: 0;
-$global-menu-padding: 0.7rem 1rem;
-$global-menu-nested-margin: 1rem;
-$global-text-direction: ltr;
-$global-flexbox: true;
-$global-prototype-breakpoints: false;
-$global-button-cursor: auto;
-$global-color-pick-contrast-tolerance: 0;
-$print-transparent-backgrounds: true;
-$print-hrefs: true;
-
-@include add-foundation-colors;
-
-// 2. Breakpoints
+// Internal variables used for text direction
+$-global-left: if($global-text-direction==rtl, right, left);
+$-global-right: if($global-text-direction==rtl, left, right);
+// Internal variable that contains the flex justifying options
+$-zf-flex-justify: flex.zf-flex-justify($global-text-direction);
+/// Global tolerance for color pick contrast.
+/// @type Number
+$-global-color-pick-contrast-tolerance: 0;
+$-print-transparent-backgrounds: true;
+$-print-hrefs: true;
+// Internal variables used for colors
+@include color.add-foundation-colors;
+// #endregion
+// #region 2. Breakpoints
 // --------------
-
-$breakpoints: (
-  small: 0,
-  medium: 640px,
-  large: 1024px,
-  xlarge: 1200px,
-  xxlarge: 1440px,
-);
-$breakpoints-hidpi: (
-  hidpi-1: 1,
-  hidpi-1-5: 1.5,
-  hidpi-2: 2,
-  retina: 2,
-  hidpi-3: 3
-);
-$print-breakpoint: large;
-$breakpoint-classes: (small medium large);
-
-// 3. The Grid
+$-breakpoints: ( small: 0, medium: 640px, large: 1024px, xlarge: 1200px, xxlarge: 1440px);
+$-breakpoints-hidpi: ( hidpi-1: 1, hidpi-1-5: 1.5, hidpi-2: 2, retina: 2, hidpi-3: 3);
+$-print-breakpoint: large;
+$-breakpoint-classes: (small medium large);
+// #endregion
+// #region 3. The Grid
 // -----------
-
-$grid-row-width: $global-width;
-$grid-column-count: 12;
-$grid-column-gutter: (
-  small: 20px,
-  medium: 30px,
-);
-$grid-column-align-edge: true;
-$grid-column-alias: 'columns';
-$block-grid-max: 8;
-
-// 4. Base Typography
+$-grid-row-width: $global-width;
+$-grid-column-count: 12;
+$-grid-column-gutter: ( small: 20px, medium: 30px, );
+$-grid-column-align-edge: true;
+$-grid-column-alias: 'columns';
+$-block-grid-max: 8;
+// #endregion
+// #region 4. Base Typography
 // ------------------
-
-$header-font-family: $body-font-family;
-$header-font-weight: $global-weight-normal;
-$header-font-style: normal;
-$font-family-monospace: Consolas, 'Liberation Mono', Courier, monospace;
-$header-color: inherit;
-$header-lineheight: 1.4;
-$header-margin-bottom: 0.5rem;
-$header-styles: (
-  small: (
-    'h1': ('font-size': 24),
-    'h2': ('font-size': 20),
-    'h3': ('font-size': 19),
-    'h4': ('font-size': 18),
-    'h5': ('font-size': 17),
-    'h6': ('font-size': 16),
-  ),
-  medium: (
-    'h1': ('font-size': 48),
-    'h2': ('font-size': 40),
-    'h3': ('font-size': 31),
-    'h4': ('font-size': 25),
-    'h5': ('font-size': 20),
-    'h6': ('font-size': 16),
-  ),
-);
-$header-text-rendering: optimizeLegibility;
-$small-font-size: 80%;
-$header-small-font-color: $medium-gray;
-$paragraph-lineheight: 1.6;
-$paragraph-margin-bottom: 1rem;
-$paragraph-text-rendering: optimizeLegibility;
-$enable-code-inline: true;
-$anchor-color: $primary-color;
-$anchor-color-hover: scale-color($anchor-color, $lightness: -14%);
-$anchor-text-decoration: none;
-$anchor-text-decoration-hover: none;
-$hr-width: $global-width;
-$hr-border: 1px solid $medium-gray;
-$hr-margin: rem-calc(20) auto;
-$list-lineheight: $paragraph-lineheight;
-$list-margin-bottom: $paragraph-margin-bottom;
-$list-style-type: disc;
-$list-style-position: outside;
-$list-side-margin: 1.25rem;
-$list-nested-side-margin: 1.25rem;
-$defnlist-margin-bottom: 1rem;
-$defnlist-term-weight: $global-weight-bold;
-$defnlist-term-margin-bottom: 0.3rem;
-$blockquote-color: $dark-gray;
-$blockquote-padding: rem-calc(9 20 0 19);
-$blockquote-border: 1px solid $medium-gray;
-$enable-cite-block: true;
-$keystroke-font: $font-family-monospace;
-$keystroke-color: $black;
-$keystroke-background: $light-gray;
-$keystroke-padding: rem-calc(2 4 0);
-$keystroke-radius: $global-radius;
-$abbr-underline: 1px dotted $black;
-
-// 5. Typography Helpers
+$-header-font-family: $body-font-family;
+$-header-font-weight: $global-weight-normal;
+$-header-font-style: normal;
+$font-family-monospace: Consolas,
+'Liberation Mono',
+Courier,
+monospace;
+$-header-color: inherit;
+$-header-lineheight: 1.4;
+$-header-margin-bottom: 0.5rem;
+$-header-styles: ( small: ( 'h1': ('font-size': 24), 'h2': ('font-size': 20), 'h3': ('font-size': 19), 'h4': ('font-size': 18), 'h5': ('font-size': 17), 'h6': ('font-size': 16), ), medium: ( 'h1': ('font-size': 48), 'h2': ('font-size': 40), 'h3': ('font-size': 31), 'h4': ('font-size': 25), 'h5': ('font-size': 20), 'h6': ('font-size': 16), ), );
+$-header-text-rendering: optimizeLegibility;
+$-small-font-size: 80%;
+$-header-small-font-color: $medium-gray;
+$-paragraph-lineheight: 1.6;
+$-paragraph-margin-bottom: 1rem;
+$-paragraph-text-rendering: optimizeLegibility;
+$-enable-code-inline: true;
+$-anchor-color: $primary-color;
+$-anchor-color-hover: color.scale($anchor-color, $lightness: -14%);
+$-anchor-text-decoration: none;
+$-anchor-text-decoration-hover: none;
+$-hr-width: $global-width;
+$-hr-border: 1px solid $medium-gray;
+$-hr-margin: rem-calc(20) auto;
+$-list-lineheight: $paragraph-lineheight;
+$-list-margin-bottom: $paragraph-margin-bottom;
+$-list-style-type: disc;
+$-list-style-position: outside;
+$-list-side-margin: 1.25rem;
+$-list-nested-side-margin: 1.25rem;
+$-defnlist-margin-bottom: 1rem;
+$-defnlist-term-weight: $global-weight-bold;
+$-defnlist-term-margin-bottom: 0.3rem;
+$-blockquote-color: $dark-gray;
+$-blockquote-padding: rem-calc(9 20 0 19);
+$-blockquote-border: 1px solid $medium-gray;
+$-enable-cite-block: true;
+$-keystroke-font: $font-family-monospace;
+$-keystroke-color: $black;
+$-keystroke-background: $light-gray;
+$-keystroke-padding: rem-calc(2 4 0);
+$-keystroke-radius: $global-radius;
+$-abbr-underline: 1px dotted $black;
+// #endregion
+// #region 5. Typography Helpers
 // ---------------------
-
-$lead-font-size: $global-font-size * 1.25;
-$lead-lineheight: 1.6;
-$subheader-lineheight: 1.4;
-$subheader-color: $dark-gray;
-$subheader-font-weight: $global-weight-normal;
-$subheader-margin-top: 0.2rem;
-$subheader-margin-bottom: 0.5rem;
-$stat-font-size: 2.5rem;
-$cite-color: $dark-gray;
-$cite-font-size: rem-calc(13);
-$cite-pseudo-content: '\2014 \0020';
-$code-color: $black;
-$code-font-family: $font-family-monospace;
-$code-font-weight: $global-weight-normal;
-$code-background: $light-gray;
-$code-border: 1px solid $medium-gray;
-$code-padding: rem-calc(2 5 1);
-$code-block-padding: 1rem;
-$code-block-margin-bottom: 1.5rem;
-
-// 6. Abide
+$-lead-font-size: $global-font-size * 1.25;
+$-lead-lineheight: 1.6;
+$-subheader-lineheight: 1.4;
+$-subheader-color: $dark-gray;
+$-subheader-font-weight: $global-weight-normal;
+$-subheader-margin-top: 0.2rem;
+$-subheader-margin-bottom: 0.5rem;
+$-stat-font-size: 2.5rem;
+$-cite-color: $dark-gray;
+$-cite-font-size: rem-calc(13);
+$-cite-pseudo-content: '\2014 \0020';
+$-code-color: $black;
+$-code-font-family: $font-family-monospace;
+$-code-font-weight: $global-weight-normal;
+$-code-background: $light-gray;
+$-code-border: 1px solid $medium-gray;
+$-code-padding: rem-calc(2 5 1);
+$-code-block-padding: 1rem;
+$-code-block-margin-bottom: 1.5rem;
+// #endregion
+// #region 6. Abide
 // --------
-
-$abide-inputs: true;
-$abide-labels: true;
-$input-background-invalid: get-color(alert);
-$form-label-color-invalid: get-color(alert);
-$input-error-color: get-color(alert);
-$input-error-font-size: rem-calc(12);
-$input-error-font-weight: $global-weight-bold;
-
-// 7. Accordion
+$-abide-inputs: true;
+$-abide-labels: true;
+$-input-background-invalid: get-color(alert);
+$-form-label-color-invalid: get-color(alert);
+$-input-error-color: get-color(alert);
+$-input-error-font-size: rem-calc(12);
+$-input-error-font-weight: $global-weight-bold;
+// #endregion
+// #region 7. Accordion
 // ------------
-
-$accordion-background: $white;
-$accordion-plusminus: true;
-$accordion-plus-content: '\002B';
-$accordion-minus-content: '\2013';
-$accordion-title-font-size: rem-calc(12);
-$accordion-item-color: $primary-color;
-$accordion-item-background-hover: $light-gray;
-$accordion-item-padding: 1.25rem 1rem;
-$accordion-content-background: $white;
-$accordion-content-border: 1px solid $light-gray;
-$accordion-content-color: $body-font-color;
-$accordion-content-padding: 1rem;
-
-// 8. Accordion Menu
+$-accordion-background: $white;
+$-accordion-plusminus: true;
+$-accordion-plus-content: '\002B';
+$-accordion-minus-content: '\2013';
+$-accordion-title-font-size: rem-calc(12);
+$-accordion-item-color: $primary-color;
+$-accordion-item-background-hover: $light-gray;
+$-accordion-item-padding: 1.25rem 1rem;
+$-accordion-content-background: $white;
+$-accordion-content-border: 1px solid $light-gray;
+$-accordion-content-color: $body-font-color;
+$-accordion-content-padding: 1rem;
+// #endregion
+// #region 8. Accordion Menu
 // -----------------
-
-$accordionmenu-padding: $global-menu-padding;
-$accordionmenu-nested-margin: $global-menu-nested-margin;
-$accordionmenu-submenu-padding: $accordionmenu-padding;
-$accordionmenu-arrows: true;
-$accordionmenu-arrow-color: $primary-color;
-$accordionmenu-item-background: null;
-$accordionmenu-border: null;
-$accordionmenu-submenu-toggle-background: null;
-$accordion-submenu-toggle-border: $accordionmenu-border;
-$accordionmenu-submenu-toggle-width: 40px;
-$accordionmenu-submenu-toggle-height: $accordionmenu-submenu-toggle-width;
-$accordionmenu-arrow-size: 6px;
-
-// 9. Badge
+$-accordionmenu-padding: $global-menu-padding;
+$-accordionmenu-nested-margin: $global-menu-nested-margin;
+$-accordionmenu-submenu-padding: $accordionmenu-padding;
+$-accordionmenu-arrows: true;
+$-accordionmenu-arrow-color: $primary-color;
+$-accordionmenu-item-background: null;
+$-accordionmenu-border: null;
+$-accordionmenu-submenu-toggle-background: null;
+$-accordion-submenu-toggle-border: $accordionmenu-border;
+$-accordionmenu-submenu-toggle-width: 40px;
+$-accordionmenu-submenu-toggle-height: $accordionmenu-submenu-toggle-width;
+$-accordionmenu-arrow-size: 6px;
+// #endregion
+// #region 9. Badge
 // --------
-
-$badge-background: $primary-color;
-$badge-color: $white;
-$badge-color-alt: $black;
-$badge-palette: $foundation-palette;
-$badge-padding: 0.3em;
-$badge-minwidth: 2.1em;
-$badge-font-size: 0.6rem;
-
-// 10. Breadcrumbs
+$-badge-background: $primary-color;
+$-badge-color: $white;
+$-badge-color-alt: $black;
+$-badge-palette: $foundation-palette;
+$-badge-padding: 0.3em;
+$-badge-minwidth: 2.1em;
+$-badge-font-size: 0.6rem;
+// #endregion
+// #region 10. Breadcrumbs
 // ---------------
-
-$breadcrumbs-margin: 0 0 $global-margin 0;
-$breadcrumbs-item-font-size: rem-calc(11);
-$breadcrumbs-item-color: $primary-color;
-$breadcrumbs-item-color-current: $black;
-$breadcrumbs-item-color-disabled: $medium-gray;
-$breadcrumbs-item-margin: 0.75rem;
-$breadcrumbs-item-uppercase: true;
-$breadcrumbs-item-separator: true;
-$breadcrumbs-item-separator-item: '/';
-$breadcrumbs-item-separator-item-rtl: '\\';
-$breadcrumbs-item-separator-color: $medium-gray;
-
-// 11. Button
+$-breadcrumbs-margin: 0 0 $global-margin 0;
+$-breadcrumbs-item-font-size: rem-calc(11);
+$-breadcrumbs-item-color: $primary-color;
+$-breadcrumbs-item-color-current: $black;
+$-breadcrumbs-item-color-disabled: $medium-gray;
+$-breadcrumbs-item-margin: 0.75rem;
+$-breadcrumbs-item-uppercase: true;
+$-breadcrumbs-item-separator: true;
+$-breadcrumbs-item-separator-item: '/';
+$-breadcrumbs-item-separator-item-rtl: '\\';
+$-breadcrumbs-item-separator-color: $medium-gray;
+// #endregion
+// #region 11. Button
 // ----------
-
-$button-font-family: inherit;
-$button-font-weight: null;
-$button-padding: 0.85em 1em;
-$button-margin: 0 0 $global-margin 0;
-$button-fill: solid;
-$button-background: $primary-color;
-$button-background-hover: scale-color($button-background, $lightness: -15%);
-$button-color: $white;
-$button-color-alt: $black;
-$button-radius: $global-radius;
-$button-border: 1px solid transparent;
-$button-hollow-border-width: 1px;
-$button-sizes: (
-  tiny: 0.6rem,
-  small: 0.75rem,
-  default: 0.9rem,
-  large: 1.25rem,
-);
-$button-palette: $foundation-palette;
-$button-opacity-disabled: 0.25;
-$button-background-hover-lightness: -20%;
-$button-hollow-hover-lightness: -50%;
-$button-transition: background-color 0.25s ease-out, color 0.25s ease-out;
-$button-responsive-expanded: false;
-
-// 12. Button Group
+$-button-font-family: inherit;
+$-button-font-weight: null;
+$-button-padding: 0.85em 1em;
+$-button-margin: 0 0 $global-margin 0;
+$-button-fill: solid;
+$-button-background: $primary-color;
+$-button-background-hover: color.scale($button-background, $lightness: -15%);
+$-button-color: $white;
+$-button-color-alt: $black;
+$-button-radius: $global-radius;
+$-button-border: 1px solid transparent;
+$-button-hollow-border-width: 1px;
+$-button-sizes: ( tiny: 0.6rem, small: 0.75rem, default: 0.9rem, large: 1.25rem, );
+$-button-palette: $foundation-palette;
+$-button-opacity-disabled: 0.25;
+$-button-background-hover-lightness: -20%;
+$-button-hollow-hover-lightness: -50%;
+$button-transition: background-color 0.25s ease-out,
+color 0.25s ease-out;
+$-button-responsive-expanded: false;
+// #endregion
+// #region 12. Button Group
 // ----------------
-
-$buttongroup-margin: 1rem;
-$buttongroup-spacing: 1px;
-$buttongroup-child-selector: '.button';
-$buttongroup-expand-max: 6;
-$buttongroup-radius-on-each: true;
-
-// 13. Callout
+$-buttongroup-margin: 1rem;
+$-buttongroup-spacing: 1px;
+$-buttongroup-child-selector: '.button';
+$-buttongroup-expand-max: 6;
+$-buttongroup-radius-on-each: true;
+// #endregion
+// #region 13. Callout
 // -----------
-
-$callout-background: $white;
-$callout-background-fade: 85%;
-$callout-border: 1px solid rgba($black, 0.25);
-$callout-margin: 0 0 1rem 0;
-$callout-sizes: (
-  small: 0.5rem,
-  default: 1rem,
-  large: 3rem,
-);
-$callout-font-color: $body-font-color;
-$callout-font-color-alt: $body-background;
-$callout-radius: $global-radius;
-$callout-link-tint: 30%;
-
-// 14. Card
+$-callout-background: $white;
+$-callout-background-fade: 85%;
+$-callout-border: 1px solid rgba($black, 0.25);
+$-callout-margin: 0 0 1rem 0;
+$-callout-sizes: ( small: 0.5rem, default: 1rem, large: 3rem, );
+$-callout-font-color: $body-font-color;
+$-callout-font-color-alt: $body-background;
+$-callout-radius: $global-radius;
+$-callout-link-tint: 30%;
+// #endregion
+// #region 14. Card
 // --------
-
-$card-background: $white;
-$card-font-color: $body-font-color;
-$card-divider-background: $light-gray;
-$card-border: 1px solid $light-gray;
-$card-shadow: none;
-$card-border-radius: $global-radius;
-$card-padding: $global-padding;
-$card-margin-bottom: $global-margin;
-
-// 15. Close Button
+$-card-background: $white;
+$-card-font-color: $body-font-color;
+$-card-divider-background: $light-gray;
+$-card-border: 1px solid $light-gray;
+$-card-shadow: none;
+$-card-border-radius: $global-radius;
+$-card-padding: $global-padding;
+$-card-margin-bottom: $global-margin;
+// #endregion
+// #region 15. Close Button
 // ----------------
-
-$closebutton-position: right top;
-$closebutton-z-index: 10;
-$closebutton-default-size: medium;
-$closebutton-offset-horizontal: (
-  small: 0.66rem,
-  medium: 1rem,
-);
-$closebutton-offset-vertical: (
-  small: 0.33em,
-  medium: 0.5rem,
-);
-$closebutton-size: (
-  small: 1.5em,
-  medium: 2em,
-);
-$closebutton-lineheight: 1;
-$closebutton-color: $dark-gray;
-$closebutton-color-hover: $black;
-
-// 16. Drilldown
+$-closebutton-position: right top;
+$-closebutton-z-index: 10;
+$-closebutton-default-size: medium;
+$-closebutton-offset-horizontal: ( small: 0.66rem, medium: 1rem, );
+$-closebutton-offset-vertical: ( small: 0.33em, medium: 0.5rem, );
+$-closebutton-size: ( small: 1.5em, medium: 2em, );
+$-closebutton-lineheight: 1;
+$-closebutton-color: $dark-gray;
+$-closebutton-color-hover: $black;
+// #endregion
+// #region 16. Drilldown
 // -------------
-
-$drilldown-transition: transform 0.15s linear;
-$drilldown-arrows: true;
-$drilldown-padding: $global-menu-padding;
-$drilldown-nested-margin: 0;
-$drilldown-background: $white;
-$drilldown-submenu-padding: $drilldown-padding;
-$drilldown-submenu-background: $white;
-$drilldown-arrow-color: $primary-color;
-$drilldown-arrow-size: 6px;
-
-// 17. Dropdown
+$-drilldown-transition: transform 0.15s linear;
+$-drilldown-arrows: true;
+$-drilldown-padding: $global-menu-padding;
+$-drilldown-nested-margin: 0;
+$-drilldown-background: $white;
+$-drilldown-submenu-padding: $drilldown-padding;
+$-drilldown-submenu-background: $white;
+$-drilldown-arrow-color: $primary-color;
+$-drilldown-arrow-size: 6px;
+// #endregion
+// #region 17. Dropdown
 // ------------
-
-$dropdown-padding: 1rem;
-$dropdown-background: $body-background;
-$dropdown-border: 1px solid $medium-gray;
-$dropdown-font-size: 1rem;
-$dropdown-width: 300px;
-$dropdown-radius: $global-radius;
-$dropdown-sizes: (
-  tiny: 100px,
-  small: 200px,
-  large: 400px,
-);
-
-// 18. Dropdown Menu
+$-dropdown-padding: 1rem;
+$-dropdown-background: $body-background;
+$-dropdown-border: 1px solid $medium-gray;
+$-dropdown-font-size: 1rem;
+$-dropdown-width: 300px;
+$-dropdown-radius: $global-radius;
+$-dropdown-sizes: ( tiny: 100px, small: 200px, large: 400px, );
+// #endregion
+// #region 18. Dropdown Menu
 // -----------------
-
-$dropdownmenu-arrows: true;
-$dropdownmenu-arrow-color: $anchor-color;
-$dropdownmenu-arrow-size: 6px;
-$dropdownmenu-arrow-padding: 1.5rem;
-$dropdownmenu-min-width: 200px;
-$dropdownmenu-background: null;
-$dropdownmenu-submenu-background: $white;
-$dropdownmenu-padding: $global-menu-padding;
-$dropdownmenu-nested-margin: 0;
-$dropdownmenu-submenu-padding: $dropdownmenu-padding;
-$dropdownmenu-border: 1px solid $medium-gray;
-$dropdown-menu-item-color-active: get-color(primary);
-$dropdown-menu-item-background-active: transparent;
-
-// 19. Flexbox Utilities
+$-dropdownmenu-arrows: true;
+$-dropdownmenu-arrow-color: $anchor-color;
+$-dropdownmenu-arrow-size: 6px;
+$-dropdownmenu-arrow-padding: 1.5rem;
+$-dropdownmenu-min-width: 200px;
+$-dropdownmenu-background: null;
+$-dropdownmenu-submenu-background: $white;
+$-dropdownmenu-padding: $global-menu-padding;
+$-dropdownmenu-nested-margin: 0;
+$-dropdownmenu-submenu-padding: $dropdownmenu-padding;
+$-dropdownmenu-border: 1px solid $medium-gray;
+$-dropdown-menu-item-color-active: get-color(primary);
+$-dropdown-menu-item-background-active: transparent;
+// #endregion
+// #region 19. Flexbox Utilities
 // ---------------------
-
-$flex-source-ordering-count: 6;
-$flexbox-responsive-breakpoints: true;
-
-// 20. Forms
+$-flex-source-ordering-count: 6;
+$-flexbox-responsive-breakpoints: true;
+// #endregion
+// #region 20. Forms
 // ---------
-
-$fieldset-border: 1px solid $medium-gray;
-$fieldset-padding: rem-calc(20);
-$fieldset-margin: rem-calc(18 0);
-$legend-padding: rem-calc(0 3);
-$form-spacing: rem-calc(16);
-$helptext-color: $black;
-$helptext-font-size: rem-calc(13);
-$helptext-font-style: italic;
-$input-prefix-color: $black;
-$input-prefix-background: $light-gray;
-$input-prefix-border: 1px solid $medium-gray;
-$input-prefix-padding: 1rem;
-$form-label-color: $black;
-$form-label-font-size: rem-calc(14);
-$form-label-font-weight: $global-weight-normal;
-$form-label-line-height: 1.8;
-$select-background: $white;
-$select-triangle-color: $dark-gray;
-$select-radius: $global-radius;
-$input-color: $black;
-$input-placeholder-color: $medium-gray;
-$input-font-family: inherit;
-$input-font-size: rem-calc(16);
-$input-font-weight: $global-weight-normal;
-$input-line-height: $global-lineheight;
-$input-background: $white;
-$input-background-focus: $white;
-$input-background-disabled: $light-gray;
-$input-border: 1px solid $medium-gray;
-$input-border-focus: 1px solid $dark-gray;
-$input-padding: $form-spacing / 2;
-$input-shadow: inset 0 1px 2px rgba($black, 0.1);
-$input-shadow-focus: 0 0 5px $medium-gray;
-$input-cursor-disabled: not-allowed;
-$input-transition: box-shadow 0.5s, border-color 0.25s ease-in-out;
-$input-number-spinners: true;
-$input-radius: $global-radius;
-$form-button-radius: $global-radius;
-
-// 21. Label
+$-fieldset-border: 1px solid $medium-gray;
+$-fieldset-padding: rem-calc(20);
+$-fieldset-margin: rem-calc(18 0);
+$-legend-padding: rem-calc(0 3);
+$-form-spacing: rem-calc(16);
+$-helptext-color: $black;
+$-helptext-font-size: rem-calc(13);
+$-helptext-font-style: italic;
+$-input-prefix-color: $black;
+$-input-prefix-background: $light-gray;
+$-input-prefix-border: 1px solid $medium-gray;
+$-input-prefix-padding: 1rem;
+$-form-label-color: $black;
+$-form-label-font-size: rem-calc(14);
+$-form-label-font-weight: $global-weight-normal;
+$-form-label-line-height: 1.8;
+$-select-background: $white;
+$-select-triangle-color: $dark-gray;
+$-select-radius: $global-radius;
+$-input-color: $black;
+$-input-placeholder-color: $medium-gray;
+$-input-font-family: inherit;
+$-input-font-size: rem-calc(16);
+$-input-font-weight: $global-weight-normal;
+$-input-line-height: $global-lineheight;
+$-input-background: $white;
+$-input-background-focus: $white;
+$-input-background-disabled: $light-gray;
+$-input-border: 1px solid $medium-gray;
+$-input-border-focus: 1px solid $dark-gray;
+$-input-padding: $form-spacing / 2;
+$-input-shadow: inset 0 1px 2px rgba($black, 0.1);
+$-input-shadow-focus: 0 0 5px $medium-gray;
+$-input-cursor-disabled: not-allowed;
+$input-transition: box-shadow 0.5s,
+border-color 0.25s ease-in-out;
+$-input-number-spinners: true;
+$-input-radius: $global-radius;
+$-form-button-radius: $global-radius;
+// #endregion
+// #region 21. Label
 // ---------
-
-$label-background: $primary-color;
-$label-color: $white;
-$label-color-alt: $black;
-$label-palette: $foundation-palette;
-$label-font-size: 0.8rem;
-$label-padding: 0.33333rem 0.5rem;
-$label-radius: $global-radius;
-
-// 22. Media Object
+$-label-background: $primary-color;
+$-label-color: $white;
+$-label-color-alt: $black;
+$-label-palette: $foundation-palette;
+$-label-font-size: 0.8rem;
+$-label-padding: 0.33333rem 0.5rem;
+$-label-radius: $global-radius;
+// #endregion
+// #region 22. Media Object
 // ----------------
-
-$mediaobject-margin-bottom: $global-margin;
-$mediaobject-section-padding: $global-padding;
-$mediaobject-image-width-stacked: 100%;
-
-// 23. Menu
+$-mediaobject-margin-bottom: $global-margin;
+$-mediaobject-section-padding: $global-padding;
+$-mediaobject-image-width-stacked: 100%;
+// #endregion
+// #region 23. Menu
 // --------
-
-$menu-margin: 0;
-$menu-nested-margin: $global-menu-nested-margin;
-$menu-items-padding: $global-menu-padding;
-$menu-simple-margin: 1rem;
-$menu-item-color-active: $white;
-$menu-item-color-alt-active: $black;
-$menu-item-background-active: get-color(primary);
-$menu-icon-spacing: 0.25rem;
-$menu-state-back-compat: true;
-$menu-centered-back-compat: true;
-$menu-icons-back-compat: true;
-
-// 24. Meter
+$-menu-margin: 0;
+$-menu-nested-margin: $global-menu-nested-margin;
+$-menu-items-padding: $global-menu-padding;
+$-menu-simple-margin: 1rem;
+$-menu-item-color-active: $white;
+$-menu-item-color-alt-active: $black;
+$-menu-item-background-active: get-color(primary);
+$-menu-icon-spacing: 0.25rem;
+$-menu-state-back-compat: true;
+$-menu-centered-back-compat: true;
+$-menu-icons-back-compat: true;
+// #endregion
+// #region 24. Meter
 // ---------
-
-$meter-height: 1rem;
-$meter-radius: $global-radius;
-$meter-background: $medium-gray;
-$meter-fill-good: $success-color;
-$meter-fill-medium: $warning-color;
-$meter-fill-bad: $alert-color;
-
-// 25. Off-canvas
+$-meter-height: 1rem;
+$-meter-radius: $global-radius;
+$-meter-background: $medium-gray;
+$-meter-fill-good: $success-color;
+$-meter-fill-medium: $warning-color;
+$-meter-fill-bad: $alert-color;
+// #endregion
+// #region 25. Off-canvas
 // --------------
-
-$offcanvas-sizes: (
-  small: 250px,
-);
-$offcanvas-vertical-sizes: (
-  small: 250px,
-);
-$offcanvas-background: $light-gray;
-$offcanvas-shadow: 0 0 10px rgba($black, 0.7);
-$offcanvas-inner-shadow-size: 20px;
-$offcanvas-inner-shadow-color: rgba($black, 0.25);
-$offcanvas-overlay-zindex: 11;
-$offcanvas-push-zindex: 12;
-$offcanvas-overlap-zindex: 13;
-$offcanvas-reveal-zindex: 12;
-$offcanvas-transition-length: 0.5s;
-$offcanvas-transition-timing: ease;
-$offcanvas-fixed-reveal: true;
-$offcanvas-exit-background: rgba($white, 0.25);
-$maincontent-class: 'off-canvas-content';
-
-// 26. Orbit
+$-offcanvas-sizes: ( small: 250px, );
+$-offcanvas-vertical-sizes: ( small: 250px, );
+$-offcanvas-background: $light-gray;
+$-offcanvas-shadow: 0 0 10px rgba($black, 0.7);
+$-offcanvas-inner-shadow-size: 20px;
+$-offcanvas-inner-shadow-color: rgba($black, 0.25);
+$-offcanvas-overlay-zindex: 11;
+$-offcanvas-push-zindex: 12;
+$-offcanvas-overlap-zindex: 13;
+$-offcanvas-reveal-zindex: 12;
+$-offcanvas-transition-length: 0.5s;
+$-offcanvas-transition-timing: ease;
+$-offcanvas-fixed-reveal: true;
+$-offcanvas-exit-background: rgba($white, 0.25);
+$-maincontent-class: 'off-canvas-content';
+// #endregion
+// #region 26. Orbit
 // ---------
-
-$orbit-bullet-background: $medium-gray;
-$orbit-bullet-background-active: $dark-gray;
-$orbit-bullet-diameter: 1.2rem;
-$orbit-bullet-margin: 0.1rem;
-$orbit-bullet-margin-top: 0.8rem;
-$orbit-bullet-margin-bottom: 0.8rem;
-$orbit-caption-background: rgba($black, 0.5);
-$orbit-caption-padding: 1rem;
-$orbit-control-background-hover: rgba($black, 0.5);
-$orbit-control-padding: 1rem;
-$orbit-control-zindex: 10;
-
-// 27. Pagination
+$-orbit-bullet-background: $medium-gray;
+$-orbit-bullet-background-active: $dark-gray;
+$-orbit-bullet-diameter: 1.2rem;
+$-orbit-bullet-margin: 0.1rem;
+$-orbit-bullet-margin-top: 0.8rem;
+$-orbit-bullet-margin-bottom: 0.8rem;
+$-orbit-caption-background: rgba($black, 0.5);
+$-orbit-caption-padding: 1rem;
+$-orbit-control-background-hover: rgba($black, 0.5);
+$-orbit-control-padding: 1rem;
+$-orbit-control-zindex: 10;
+// #endregion
+// #region 27. Pagination
 // --------------
-
-$pagination-font-size: rem-calc(14);
-$pagination-margin-bottom: $global-margin;
-$pagination-item-color: $black;
-$pagination-item-padding: rem-calc(3 10);
-$pagination-item-spacing: rem-calc(1);
-$pagination-radius: $global-radius;
-$pagination-item-background-hover: $light-gray;
-$pagination-item-background-current: $primary-color;
-$pagination-item-color-current: $white;
-$pagination-item-color-disabled: $medium-gray;
-$pagination-ellipsis-color: $black;
-$pagination-mobile-items: false;
-$pagination-mobile-current-item: false;
-$pagination-arrows: true;
-$pagination-arrow-previous: '\00AB';
-$pagination-arrow-next: '\00BB';
-
-// 28. Progress Bar
+$-pagination-font-size: rem-calc(14);
+$-pagination-margin-bottom: $global-margin;
+$-pagination-item-color: $black;
+$-pagination-item-padding: rem-calc(3 10);
+$-pagination-item-spacing: rem-calc(1);
+$-pagination-radius: $global-radius;
+$-pagination-item-background-hover: $light-gray;
+$-pagination-item-background-current: $primary-color;
+$-pagination-item-color-current: $white;
+$-pagination-item-color-disabled: $medium-gray;
+$-pagination-ellipsis-color: $black;
+$-pagination-mobile-items: false;
+$-pagination-mobile-current-item: false;
+$-pagination-arrows: true;
+$-pagination-arrow-previous: '\00AB';
+$-pagination-arrow-next: '\00BB';
+// #endregion
+// #region 28. Progress Bar
 // ----------------
-
-$progress-height: 1rem;
-$progress-background: $medium-gray;
-$progress-margin-bottom: $global-margin;
-$progress-meter-background: $primary-color;
-$progress-radius: $global-radius;
-
-// 29. Prototype Arrow
+$-progress-height: 1rem;
+$-progress-background: $medium-gray;
+$-progress-margin-bottom: $global-margin;
+$-progress-meter-background: $primary-color;
+$-progress-radius: $global-radius;
+// #endregion
+// #region 29. Prototype Arrow
 // -------------------
-
-$prototype-arrow-directions: (
-  down,
-  up,
-  right,
-  left
-);
-$prototype-arrow-size: 0.4375rem;
-$prototype-arrow-color: $black;
-
-// 30. Prototype Border-Box
+$-prototype-arrow-directions: ( down, up, right, left);
+$-prototype-arrow-size: 0.4375rem;
+$-prototype-arrow-color: $black;
+// #endregion
+// #region 30. Prototype Border-Box
 // ------------------------
-
-$prototype-border-box-breakpoints: $global-prototype-breakpoints;
-
-// 31. Prototype Border-None
+$-prototype-border-box-breakpoints: $global-prototype-breakpoints;
+// #endregion
+// #region 31. Prototype Border-None
 // -------------------------
-
-$prototype-border-none-breakpoints: $global-prototype-breakpoints;
-
-// 32. Prototype Bordered
+$-prototype-border-none-breakpoints: $global-prototype-breakpoints;
+// #endregion
+// #region 32. Prototype Bordered
 // ----------------------
-
-$prototype-bordered-breakpoints: $global-prototype-breakpoints;
-$prototype-border-width: rem-calc(1);
-$prototype-border-type: solid;
-$prototype-border-color: $medium-gray;
-
-// 33. Prototype Display
+$-prototype-bordered-breakpoints: $global-prototype-breakpoints;
+$-prototype-border-width: rem-calc(1);
+$-prototype-border-type: solid;
+$-prototype-border-color: $medium-gray;
+// #endregion
+// #region 33. Prototype Display
 // ---------------------
-
-$prototype-display-breakpoints: $global-prototype-breakpoints;
-$prototype-display: (
-  inline,
-  inline-block,
-  block,
-  table,
-  table-cell
-);
-
-// 34. Prototype Font-Styling
+$-prototype-display-breakpoints: $global-prototype-breakpoints;
+$-prototype-display: ( inline, inline-block, block, table, table-cell);
+// #endregion
+// #region 34. Prototype Font-Styling
 // --------------------------
-
-$prototype-font-breakpoints: $global-prototype-breakpoints;
-$prototype-wide-letter-spacing: rem-calc(4);
-$prototype-font-normal: $global-weight-normal;
-$prototype-font-bold: $global-weight-bold;
-
-// 35. Prototype List-Style-Type
+$-prototype-font-breakpoints: $global-prototype-breakpoints;
+$-prototype-wide-letter-spacing: rem-calc(4);
+$-prototype-font-normal: $global-weight-normal;
+$-prototype-font-bold: $global-weight-bold;
+// #endregion
+// #region 35. Prototype List-Style-Type
 // -----------------------------
-
-$prototype-list-breakpoints: $global-prototype-breakpoints;
-$prototype-style-type-unordered: (
-  disc,
-  circle,
-  square
-);
-$prototype-style-type-ordered: (
-  decimal,
-  lower-alpha,
-  lower-latin,
-  lower-roman,
-  upper-alpha,
-  upper-latin,
-  upper-roman
-);
-
-// 36. Prototype Overflow
+$-prototype-list-breakpoints: $global-prototype-breakpoints;
+$-prototype-style-type-unordered: ( disc, circle, square);
+$-prototype-style-type-ordered: ( decimal, lower-alpha, lower-latin, lower-roman, upper-alpha, upper-latin, upper-roman);
+// #endregion
+// #region 36. Prototype Overflow
 // ----------------------
-
-$prototype-overflow-breakpoints: $global-prototype-breakpoints;
-$prototype-overflow: (
-  visible,
-  hidden,
-  scroll
-);
-
-// 37. Prototype Position
+$-prototype-overflow-breakpoints: $global-prototype-breakpoints;
+$-prototype-overflow: ( visible, hidden, scroll);
+// #endregion
+// #region 37. Prototype Position
 // ----------------------
-
-$prototype-position-breakpoints: $global-prototype-breakpoints;
-$prototype-position: (
-  static,
-  relative,
-  absolute,
-  fixed
-);
-$prototype-position-z-index: 975;
-
-// 38. Prototype Rounded
+$-prototype-position-breakpoints: $global-prototype-breakpoints;
+$-prototype-position: ( static, relative, absolute, fixed);
+$-prototype-position-z-index: 975;
+// #endregion
+// #region 38. Prototype Rounded
 // ---------------------
-
-$prototype-rounded-breakpoints: $global-prototype-breakpoints;
-$prototype-border-radius: rem-calc(3);
-
-// 39. Prototype Separator
+$-prototype-rounded-breakpoints: $global-prototype-breakpoints;
+$-prototype-border-radius: rem-calc(3);
+// #endregion
+// #region 39. Prototype Separator
 // -----------------------
-
-$prototype-separator-breakpoints: $global-prototype-breakpoints;
-$prototype-separator-align: center;
-$prototype-separator-height: rem-calc(2);
-$prototype-separator-width: 3rem;
-$prototype-separator-background: $primary-color;
-$prototype-separator-margin-top: $global-margin;
-
-// 40. Prototype Shadow
+$-prototype-separator-breakpoints: $global-prototype-breakpoints;
+$-prototype-separator-align: center;
+$-prototype-separator-height: rem-calc(2);
+$-prototype-separator-width: 3rem;
+$-prototype-separator-background: $primary-color;
+$-prototype-separator-margin-top: $global-margin;
+// #endregion
+// #region 40. Prototype Shadow
 // --------------------
-
-$prototype-shadow-breakpoints: $global-prototype-breakpoints;
-$prototype-box-shadow: 0 2px 5px 0 rgba(0,0,0,.16),
-                       0 2px 10px 0 rgba(0,0,0,.12);
-
-// 41. Prototype Sizing
+$-prototype-shadow-breakpoints: $global-prototype-breakpoints;
+$prototype-box-shadow: 0 2px 5px 0 rgba(0, 0, 0, .16),
+0 2px 10px 0 rgba(0, 0, 0, .12);
+// #endregion
+// #region 41. Prototype Sizing
 // --------------------
-
-$prototype-sizing-breakpoints: $global-prototype-breakpoints;
-$prototype-sizing: (
-  width,
-  height
-);
-$prototype-sizes: (
-  25: 25%,
-  50: 50%,
-  75: 75%,
-  100: 100%
-);
-
-// 42. Prototype Spacing
+$-prototype-sizing-breakpoints: $global-prototype-breakpoints;
+$-prototype-sizing: ( width, height);
+$-prototype-sizes: ( 25: 25%, 50: 50%, 75: 75%, 100: 100%);
+// #endregion
+// #region 42. Prototype Spacing
 // ---------------------
-
-$prototype-spacing-breakpoints: $global-prototype-breakpoints;
-$prototype-spacers-count: 3;
-
-// 43. Prototype Text-Decoration
+$-prototype-spacing-breakpoints: $global-prototype-breakpoints;
+$-prototype-spacers-count: 3;
+// #endregion
+// #region 43. Prototype Text-Decoration
 // -----------------------------
-
-$prototype-decoration-breakpoints: $global-prototype-breakpoints;
-$prototype-text-decoration: (
-  overline,
-  underline,
-  line-through,
-);
-
-// 44. Prototype Text-Transformation
+$-prototype-decoration-breakpoints: $global-prototype-breakpoints;
+$-prototype-text-decoration: ( overline, underline, line-through, );
+// #endregion
+// #region 44. Prototype Text-Transformation
 // ---------------------------------
-
-$prototype-transformation-breakpoints: $global-prototype-breakpoints;
-$prototype-text-transformation: (
-  lowercase,
-  uppercase,
-  capitalize
-);
-
-// 45. Prototype Text-Utilities
+$-prototype-transformation-breakpoints: $global-prototype-breakpoints;
+$-prototype-text-transformation: ( lowercase, uppercase, capitalize);
+// #endregion
+// #region 45. Prototype Text-Utilities
 // ----------------------------
-
-$prototype-utilities-breakpoints: $global-prototype-breakpoints;
-$prototype-text-overflow: ellipsis;
-
-// 46. Responsive Embed
+$-prototype-utilities-breakpoints: $global-prototype-breakpoints;
+$-prototype-text-overflow: ellipsis;
+// #endregion
+// #region 46. Responsive Embed
 // --------------------
-
-$responsive-embed-margin-bottom: rem-calc(16);
-$responsive-embed-ratios: (
-  default: 4 by 3,
-  widescreen: 16 by 9,
-);
-
-// 47. Reveal
+$-responsive-embed-margin-bottom: rem-calc(16);
+$-responsive-embed-ratios: ( default: 4 by 3, widescreen: 16 by 9, );
+// #endregion
+// #region 47. Reveal
 // ----------
-
-$reveal-background: $white;
-$reveal-width: 600px;
-$reveal-max-width: $global-width;
-$reveal-padding: $global-padding;
-$reveal-border: 1px solid $medium-gray;
-$reveal-radius: $global-radius;
-$reveal-zindex: 1005;
-$reveal-overlay-background: rgba($black, 0.45);
-
-// 48. Slider
+$-reveal-background: $white;
+$-reveal-width: 600px;
+$-reveal-max-width: $global-width;
+$-reveal-padding: $global-padding;
+$-reveal-border: 1px solid $medium-gray;
+$-reveal-radius: $global-radius;
+$-reveal-zindex: 1005;
+$-reveal-overlay-background: rgba($black, 0.45);
+// #endregion
+// #region 48. Slider
 // ----------
-
-$slider-width-vertical: 0.5rem;
-$slider-transition: all 0.2s ease-in-out;
-$slider-height: 0.5rem;
-$slider-background: $light-gray;
-$slider-fill-background: $medium-gray;
-$slider-handle-height: 1.4rem;
-$slider-handle-width: 1.4rem;
-$slider-handle-background: $primary-color;
-$slider-opacity-disabled: 0.25;
-$slider-radius: $global-radius;
-
-// 49. Switch
+$-slider-width-vertical: 0.5rem;
+$-slider-transition: all 0.2s ease-in-out;
+$-slider-height: 0.5rem;
+$-slider-background: $light-gray;
+$-slider-fill-background: $medium-gray;
+$-slider-handle-height: 1.4rem;
+$-slider-handle-width: 1.4rem;
+$-slider-handle-background: $primary-color;
+$-slider-opacity-disabled: 0.25;
+$-slider-radius: $global-radius;
+// #endregion
+// #region 49. Switch
 // ----------
-
-$switch-background: $medium-gray;
-$switch-background-active: $primary-color;
-$switch-height: 2rem;
-$switch-height-tiny: 1.5rem;
-$switch-height-small: 1.75rem;
-$switch-height-large: 2.5rem;
-$switch-radius: $global-radius;
-$switch-margin: $global-margin;
-$switch-paddle-background: $white;
-$switch-paddle-offset: 0.25rem;
-$switch-paddle-radius: $global-radius;
-$switch-paddle-transition: all 0.25s ease-out;
-$switch-opacity-disabled: .5;
-$switch-cursor-disabled: not-allowed;
-
-// 50. Table
+$-switch-background: $medium-gray;
+$-switch-background-active: $primary-color;
+$-switch-height: 2rem;
+$-switch-height-tiny: 1.5rem;
+$-switch-height-small: 1.75rem;
+$-switch-height-large: 2.5rem;
+$-switch-radius: $global-radius;
+$-switch-margin: $global-margin;
+$-switch-paddle-background: $white;
+$-switch-paddle-offset: 0.25rem;
+$-switch-paddle-radius: $global-radius;
+$-switch-paddle-transition: all 0.25s ease-out;
+$-switch-opacity-disabled: .5;
+$-switch-cursor-disabled: not-allowed;
+// #endregion
+// #region 50. Table
 // ---------
-
-$table-background: $white;
-$table-color-scale: 5%;
-$table-border: 1px solid smart-scale($table-background, $table-color-scale);
-$table-padding: rem-calc(8 10 10);
-$table-hover-scale: 2%;
-$table-row-hover: darken($table-background, $table-hover-scale);
-$table-row-stripe-hover: darken($table-background, $table-color-scale + $table-hover-scale);
-$table-is-striped: true;
-$table-striped-background: smart-scale($table-background, $table-color-scale);
-$table-stripe: even;
-$table-head-background: smart-scale($table-background, $table-color-scale / 2);
-$table-head-row-hover: darken($table-head-background, $table-hover-scale);
-$table-foot-background: smart-scale($table-background, $table-color-scale);
-$table-foot-row-hover: darken($table-foot-background, $table-hover-scale);
-$table-head-font-color: $body-font-color;
-$table-foot-font-color: $body-font-color;
-$show-header-for-stacked: false;
-$table-stack-breakpoint: medium;
-
-// 51. Tabs
+$-table-background: $white;
+$-table-color-scale: 5%;
+$-table-border: 1px solid smart-scale($table-background, $table-color-scale);
+$-table-padding: rem-calc(8 10 10);
+$-table-hover-scale: 2%;
+$-table-row-hover: color.adjust($table-background, $lightness: -$table-hover-scale);
+$-table-row-stripe-hover: color.adjust($table-background, $lightness: -($table-color-scale + $table-hover-scale));
+$-table-is-striped: true;
+$-table-striped-background: smart-scale($table-background, $table-color-scale);
+$-table-stripe: even;
+$-table-head-background: smart-scale($table-background, $table-color-scale / 2);
+$-table-head-row-hover: color.adjust($table-head-background, $lightness: -$table-hover-scale);
+$-table-foot-background: smart-scale($table-background, $table-color-scale);
+$-table-foot-row-hover: color.adjust($table-foot-background, $lightness: -$table-hover-scale);
+$-table-head-font-color: $body-font-color;
+$-table-foot-font-color: $body-font-color;
+$-show-header-for-stacked: false;
+$-table-stack-breakpoint: medium;
+// #endregion
+// #region 51. Tabs
 // --------
-
-$tab-margin: 0;
-$tab-background: $white;
-$tab-color: $primary-color;
-$tab-background-active: $light-gray;
-$tab-active-color: $primary-color;
-$tab-item-font-size: rem-calc(12);
-$tab-item-background-hover: $white;
-$tab-item-padding: 1.25rem 1.5rem;
-$tab-content-background: $white;
-$tab-content-border: $light-gray;
-$tab-content-color: $body-font-color;
-$tab-content-padding: 1rem;
-
-// 52. Thumbnail
+$-tab-margin: 0;
+$-tab-background: $white;
+$-tab-color: $primary-color;
+$-tab-background-active: $light-gray;
+$-tab-active-color: $primary-color;
+$-tab-item-font-size: rem-calc(12);
+$-tab-item-background-hover: $white;
+$-tab-item-padding: 1.25rem 1.5rem;
+$-tab-content-background: $white;
+$-tab-content-border: $light-gray;
+$-tab-content-color: $body-font-color;
+$-tab-content-padding: 1rem;
+// #endregion
+// #region 52. Thumbnail
 // -------------
-
-$thumbnail-border: 4px solid $white;
-$thumbnail-margin-bottom: $global-margin;
-$thumbnail-shadow: 0 0 0 1px rgba($black, 0.2);
-$thumbnail-shadow-hover: 0 0 6px 1px rgba($primary-color, 0.5);
-$thumbnail-transition: box-shadow 200ms ease-out;
-$thumbnail-radius: $global-radius;
-
-// 53. Title Bar
+$-thumbnail-border: 4px solid $white;
+$-thumbnail-margin-bottom: $global-margin;
+$-thumbnail-shadow: 0 0 0 1px rgba($black, 0.2);
+$-thumbnail-shadow-hover: 0 0 6px 1px rgba($primary-color, 0.5);
+$-thumbnail-transition: box-shadow 200ms ease-out;
+$-thumbnail-radius: $global-radius;
+// #endregion
+// #region 53. Title Bar
 // -------------
-
-$titlebar-background: $black;
-$titlebar-color: $white;
-$titlebar-padding: 0.5rem;
-$titlebar-text-font-weight: bold;
-$titlebar-icon-color: $white;
-$titlebar-icon-color-hover: $medium-gray;
-$titlebar-icon-spacing: 0.25rem;
-
-// 54. Tooltip
+$-titlebar-background: $black;
+$-titlebar-color: $white;
+$-titlebar-padding: 0.5rem;
+$-titlebar-text-font-weight: bold;
+$-titlebar-icon-color: $white;
+$-titlebar-icon-color-hover: $medium-gray;
+$-titlebar-icon-spacing: 0.25rem;
+// #endregion
+// #region 54. Tooltip
 // -----------
-
-$has-tip-cursor: help;
-$has-tip-font-weight: $global-weight-bold;
-$has-tip-border-bottom: dotted 1px $dark-gray;
-$tooltip-background-color: $black;
-$tooltip-color: $white;
-$tooltip-padding: 0.75rem;
-$tooltip-max-width: 10rem;
-$tooltip-font-size: $small-font-size;
-$tooltip-pip-width: 0.75rem;
-$tooltip-pip-height: $tooltip-pip-width * 0.866;
-$tooltip-radius: $global-radius;
-
-// 55. Top Bar
+$-has-tip-cursor: help;
+$-has-tip-font-weight: $global-weight-bold;
+$-has-tip-border-bottom: dotted 1px $dark-gray;
+$-tooltip-background-color: $black;
+$-tooltip-color: $white;
+$-tooltip-padding: 0.75rem;
+$-tooltip-max-width: 10rem;
+$-tooltip-font-size: $small-font-size;
+$-tooltip-pip-width: 0.75rem;
+$-tooltip-pip-height: $tooltip-pip-width * 0.866;
+$-tooltip-radius: $global-radius;
+// #endregion
+// #region 55. Top Bar
 // -----------
-
-$topbar-padding: 0.5rem;
-$topbar-background: $light-gray;
-$topbar-submenu-background: $topbar-background;
-$topbar-title-spacing: 0.5rem 1rem 0.5rem 0;
-$topbar-input-width: 200px;
-$topbar-unstack-breakpoint: medium;
-
-// 56. Xy Grid
+$-topbar-padding: 0.5rem;
+$-topbar-background: $light-gray;
+$-topbar-submenu-background: $topbar-background;
+$-topbar-title-spacing: 0.5rem 1rem 0.5rem 0;
+$-topbar-input-width: 200px;
+$-topbar-unstack-breakpoint: medium;
+// #endregion
+// #region 56. Xy Grid
 // -----------
+$-xy-grid: true;
+$-grid-container: $global-width;
+$-grid-columns: 12;
+$-grid-margin-gutters: ( small: 20px, medium: 30px);
+$-grid-padding-gutters: $grid-margin-gutters;
+$-grid-container-padding: $grid-padding-gutters;
+$-grid-container-max: $global-width;
+$-xy-block-grid-max: 8;
+// #endregion
+// #region 57. @mixin configure
+@mixin configure($set-global-font-size: null, $set-global-width: null, $set-global-lineheight: null, $set-foundation-palette: null, $set-light-gray: null, $set-medium-gray: null, $set-dark-gray: null, $set-black: null, $set-white: null, $set-body-background: null, $set-body-font-color: null, $set-body-font-family: 'Helvetica Neue', $set-body-antialiased: null, $set-global-margin: null, $set-global-padding: null, $set-global-position: null, $set-global-weight-normal: null, $set-global-weight-bold: null, $set-global-radius: null, $set-global-menu-padding: null, $set-global-menu-nested-margin: null, $set-global-text-direction: null, $set-global-flexbox: null, $set-global-prototype-breakpoints: null, $set-global-button-cursor: null, $set-global-left: null, $set-global-right: null, $set-zf-flex-justify: null, $set-global-color-pick-contrast-tolerance: null, $set-print-transparent-backgrounds: null, $set-print-hrefs: null, $set-breakpoints: null, $set-breakpoints-hidpi: null, $set-print-breakpoint: null, $set-breakpoint-classes: null, $set-grid-row-width: null, $set-grid-column-count: null, $set-grid-column-gutter: null, $set-grid-column-align-edge: null, $set-grid-column-alias: null, $set-block-grid-max: null, $set-header-font-family: null, $set-header-font-weight: null, $set-header-font-style: null, $set-font-family-monospace: Consolas, $set-header-color: null, $set-header-lineheight: null, $set-header-margin-bottom: null, $set-header-styles: null, $set-header-text-rendering: null, $set-small-font-size: null, $set-header-small-font-color: null, $set-paragraph-lineheight: null, $set-paragraph-margin-bottom: null, $set-paragraph-text-rendering: null, $set-enable-code-inline: null, $set-anchor-color: null, $set-anchor-color-hover: null, $set-anchor-text-decoration: null, $set-anchor-text-decoration-hover: null, $set-hr-width: null, $set-hr-border: null, $set-hr-margin: null, $set-list-lineheight: null, $set-list-margin-bottom: null, $set-list-style-type: null, $set-list-style-position: null, $set-list-side-margin: null, $set-list-nested-side-margin: null, $set-defnlist-margin-bottom: null, $set-defnlist-term-weight: null, $set-defnlist-term-margin-bottom: null, $set-blockquote-color: null, $set-blockquote-padding: null, $set-blockquote-border: null, $set-enable-cite-block: null, $set-keystroke-font: null, $set-keystroke-color: null, $set-keystroke-background: null, $set-keystroke-padding: null, $set-keystroke-radius: null, $set-abbr-underline: null, $set-lead-font-size: null, $set-lead-lineheight: null, $set-subheader-lineheight: null, $set-subheader-color: null, $set-subheader-font-weight: null, $set-subheader-margin-top: null, $set-subheader-margin-bottom: null, $set-stat-font-size: null, $set-cite-color: null, $set-cite-font-size: null, $set-cite-pseudo-content: null, $set-code-color: null, $set-code-font-family: null, $set-code-font-weight: null, $set-code-background: null, $set-code-border: null, $set-code-padding: null, $set-code-block-padding: null, $set-code-block-margin-bottom: null, $set-abide-inputs: null, $set-abide-labels: null, $set-input-background-invalid: null, $set-form-label-color-invalid: null, $set-input-error-color: null, $set-input-error-font-size: null, $set-input-error-font-weight: null, $set-accordion-background: null, $set-accordion-plusminus: null, $set-accordion-plus-content: null, $set-accordion-minus-content: null, $set-accordion-title-font-size: null, $set-accordion-item-color: null, $set-accordion-item-background-hover: null, $set-accordion-item-padding: null, $set-accordion-content-background: null, $set-accordion-content-border: null, $set-accordion-content-color: null, $set-accordion-content-padding: null, $set-accordionmenu-padding: null, $set-accordionmenu-nested-margin: null, $set-accordionmenu-submenu-padding: null, $set-accordionmenu-arrows: null, $set-accordionmenu-arrow-color: null, $set-accordionmenu-item-background: null, $set-accordionmenu-border: null, $set-accordionmenu-submenu-toggle-background: null, $set-accordion-submenu-toggle-border: null, $set-accordionmenu-submenu-toggle-width: null, $set-accordionmenu-submenu-toggle-height: null, $set-accordionmenu-arrow-size: null, $set-badge-background: null, $set-badge-color: null, $set-badge-color-alt: null, $set-badge-palette: null, $set-badge-padding: null, $set-badge-minwidth: null, $set-badge-font-size: null, $set-breadcrumbs-margin: null, $set-breadcrumbs-item-font-size: null, $set-breadcrumbs-item-color: null, $set-breadcrumbs-item-color-current: null, $set-breadcrumbs-item-color-disabled: null, $set-breadcrumbs-item-margin: null, $set-breadcrumbs-item-uppercase: null, $set-breadcrumbs-item-separator: null, $set-breadcrumbs-item-separator-item: null, $set-breadcrumbs-item-separator-item-rtl: null, $set-breadcrumbs-item-separator-color: null, $set-button-font-family: null, $set-button-font-weight: null, $set-button-padding: null, $set-button-margin: null, $set-button-fill: null, $set-button-background: null, $set-button-background-hover: null, $set-button-color: null, $set-button-color-alt: null, $set-button-radius: null, $set-button-border: null, $set-button-hollow-border-width: null, $set-button-sizes: null, $set-button-palette: null, $set-button-opacity-disabled: null, $set-button-background-hover-lightness: null, $set-button-hollow-hover-lightness: null, $set-button-transition: background-color 0.25s ease-out, $set-button-responsive-expanded: null, $set-buttongroup-margin: null, $set-buttongroup-spacing: null, $set-buttongroup-child-selector: null, $set-buttongroup-expand-max: null, $set-buttongroup-radius-on-each: null, $set-callout-background: null, $set-callout-background-fade: null, $set-callout-border: null, $set-callout-margin: null, $set-callout-sizes: null, $set-callout-font-color: null, $set-callout-font-color-alt: null, $set-callout-radius: null, $set-callout-link-tint: null, $set-card-background: null, $set-card-font-color: null, $set-card-divider-background: null, $set-card-border: null, $set-card-shadow: null, $set-card-border-radius: null, $set-card-padding: null, $set-card-margin-bottom: null, $set-closebutton-position: null, $set-closebutton-z-index: null, $set-closebutton-default-size: null, $set-closebutton-offset-horizontal: null, $set-closebutton-offset-vertical: null, $set-closebutton-size: null, $set-closebutton-lineheight: null, $set-closebutton-color: null, $set-closebutton-color-hover: null, $set-drilldown-transition: null, $set-drilldown-arrows: null, $set-drilldown-padding: null, $set-drilldown-nested-margin: null, $set-drilldown-background: null, $set-drilldown-submenu-padding: null, $set-drilldown-submenu-background: null, $set-drilldown-arrow-color: null, $set-drilldown-arrow-size: null, $set-dropdown-padding: null, $set-dropdown-background: null, $set-dropdown-border: null, $set-dropdown-font-size: null, $set-dropdown-width: null, $set-dropdown-radius: null, $set-dropdown-sizes: null, $set-dropdownmenu-arrows: null, $set-dropdownmenu-arrow-color: null, $set-dropdownmenu-arrow-size: null, $set-dropdownmenu-arrow-padding: null, $set-dropdownmenu-min-width: null, $set-dropdownmenu-background: null, $set-dropdownmenu-submenu-background: null, $set-dropdownmenu-padding: null, $set-dropdownmenu-nested-margin: null, $set-dropdownmenu-submenu-padding: null, $set-dropdownmenu-border: null, $set-dropdown-menu-item-color-active: null, $set-dropdown-menu-item-background-active: null, $set-flex-source-ordering-count: null, $set-flexbox-responsive-breakpoints: null, $set-fieldset-border: null, $set-fieldset-padding: null, $set-fieldset-margin: null, $set-legend-padding: null, $set-form-spacing: null, $set-helptext-color: null, $set-helptext-font-size: null, $set-helptext-font-style: null, $set-input-prefix-color: null, $set-input-prefix-background: null, $set-input-prefix-border: null, $set-input-prefix-padding: null, $set-form-label-color: null, $set-form-label-font-size: null, $set-form-label-font-weight: null, $set-form-label-line-height: null, $set-select-background: null, $set-select-triangle-color: null, $set-select-radius: null, $set-input-color: null, $set-input-placeholder-color: null, $set-input-font-family: null, $set-input-font-size: null, $set-input-font-weight: null, $set-input-line-height: null, $set-input-background: null, $set-input-background-focus: null, $set-input-background-disabled: null, $set-input-border: null, $set-input-border-focus: null, $set-input-padding: null, $set-input-shadow: null, $set-input-shadow-focus: null, $set-input-cursor-disabled: null, $set-input-transition: box-shadow 0.5s, $set-input-number-spinners: null, $set-input-radius: null, $set-form-button-radius: null, $set-label-background: null, $set-label-color: null, $set-label-color-alt: null, $set-label-palette: null, $set-label-font-size: null, $set-label-padding: null, $set-label-radius: null, $set-mediaobject-margin-bottom: null, $set-mediaobject-section-padding: null, $set-mediaobject-image-width-stacked: null, $set-menu-margin: null, $set-menu-nested-margin: null, $set-menu-items-padding: null, $set-menu-simple-margin: null, $set-menu-item-color-active: null, $set-menu-item-color-alt-active: null, $set-menu-item-background-active: null, $set-menu-icon-spacing: null, $set-menu-state-back-compat: null, $set-menu-centered-back-compat: null, $set-menu-icons-back-compat: null, $set-meter-height: null, $set-meter-radius: null, $set-meter-background: null, $set-meter-fill-good: null, $set-meter-fill-medium: null, $set-meter-fill-bad: null, $set-offcanvas-sizes: null, $set-offcanvas-vertical-sizes: null, $set-offcanvas-background: null, $set-offcanvas-shadow: null, $set-offcanvas-inner-shadow-size: null, $set-offcanvas-inner-shadow-color: null, $set-offcanvas-overlay-zindex: null, $set-offcanvas-push-zindex: null, $set-offcanvas-overlap-zindex: null, $set-offcanvas-reveal-zindex: null, $set-offcanvas-transition-length: null, $set-offcanvas-transition-timing: null, $set-offcanvas-fixed-reveal: null, $set-offcanvas-exit-background: null, $set-maincontent-class: null, $set-orbit-bullet-background: null, $set-orbit-bullet-background-active: null, $set-orbit-bullet-diameter: null, $set-orbit-bullet-margin: null, $set-orbit-bullet-margin-top: null, $set-orbit-bullet-margin-bottom: null, $set-orbit-caption-background: null, $set-orbit-caption-padding: null, $set-orbit-control-background-hover: null, $set-orbit-control-padding: null, $set-orbit-control-zindex: null, $set-pagination-font-size: null, $set-pagination-margin-bottom: null, $set-pagination-item-color: null, $set-pagination-item-padding: null, $set-pagination-item-spacing: null, $set-pagination-radius: null, $set-pagination-item-background-hover: null, $set-pagination-item-background-current: null, $set-pagination-item-color-current: null, $set-pagination-item-color-disabled: null, $set-pagination-ellipsis-color: null, $set-pagination-mobile-items: null, $set-pagination-mobile-current-item: null, $set-pagination-arrows: null, $set-pagination-arrow-previous: null, $set-pagination-arrow-next: null, $set-progress-height: null, $set-progress-background: null, $set-progress-margin-bottom: null, $set-progress-meter-background: null, $set-progress-radius: null, $set-prototype-arrow-directions: null, $set-prototype-arrow-size: null, $set-prototype-arrow-color: null, $set-prototype-border-box-breakpoints: null, $set-prototype-border-none-breakpoints: null, $set-prototype-bordered-breakpoints: null, $set-prototype-border-width: null, $set-prototype-border-type: null, $set-prototype-border-color: null, $set-prototype-display-breakpoints: null, $set-prototype-display: null, $set-prototype-font-breakpoints: null, $set-prototype-wide-letter-spacing: null, $set-prototype-font-normal: null, $set-prototype-font-bold: null, $set-prototype-list-breakpoints: null, $set-prototype-style-type-unordered: null, $set-prototype-style-type-ordered: null, $set-prototype-overflow-breakpoints: null, $set-prototype-overflow: null, $set-prototype-position-breakpoints: null, $set-prototype-position: null, $set-prototype-position-z-index: null, $set-prototype-rounded-breakpoints: null, $set-prototype-border-radius: null, $set-prototype-separator-breakpoints: null, $set-prototype-separator-align: null, $set-prototype-separator-height: null, $set-prototype-separator-width: null, $set-prototype-separator-background: null, $set-prototype-separator-margin-top: null, $set-prototype-shadow-breakpoints: null, $set-prototype-box-shadow: 0 2px 5px 0 rgba(0, 0, 0, .16), $set-prototype-sizing-breakpoints: null, $set-prototype-sizing: null, $set-prototype-sizes: null, $set-prototype-spacing-breakpoints: null, $set-prototype-spacers-count: null, $set-prototype-decoration-breakpoints: null, $set-prototype-text-decoration: null, $set-prototype-transformation-breakpoints: null, $set-prototype-text-transformation: null, $set-prototype-utilities-breakpoints: null, $set-prototype-text-overflow: null, $set-responsive-embed-margin-bottom: null, $set-responsive-embed-ratios: null, $set-reveal-background: null, $set-reveal-width: null, $set-reveal-max-width: null, $set-reveal-padding: null, $set-reveal-border: null, $set-reveal-radius: null, $set-reveal-zindex: null, $set-reveal-overlay-background: null, $set-slider-width-vertical: null, $set-slider-transition: null, $set-slider-height: null, $set-slider-background: null, $set-slider-fill-background: null, $set-slider-handle-height: null, $set-slider-handle-width: null, $set-slider-handle-background: null, $set-slider-opacity-disabled: null, $set-slider-radius: null, $set-switch-background: null, $set-switch-background-active: null, $set-switch-height: null, $set-switch-height-tiny: null, $set-switch-height-small: null, $set-switch-height-large: null, $set-switch-radius: null, $set-switch-margin: null, $set-switch-paddle-background: null, $set-switch-paddle-offset: null, $set-switch-paddle-radius: null, $set-switch-paddle-transition: null, $set-switch-opacity-disabled: null, $set-switch-cursor-disabled: null, $set-table-background: null, $set-table-color-scale: null, $set-table-border: null, $set-table-padding: null, $set-table-hover-scale: null, $set-table-row-hover: null, $set-table-row-stripe-hover: null, $set-table-is-striped: null, $set-table-striped-background: null, $set-table-stripe: null, $set-table-head-background: null, $set-table-head-row-hover: null, $set-table-foot-background: null, $set-table-foot-row-hover: null, $set-table-head-font-color: null, $set-table-foot-font-color: null, $set-show-header-for-stacked: null, $set-table-stack-breakpoint: null, $set-tab-margin: null, $set-tab-background: null, $set-tab-color: null, $set-tab-background-active: null, $set-tab-active-color: null, $set-tab-item-font-size: null, $set-tab-item-background-hover: null, $set-tab-item-padding: null, $set-tab-content-background: null, $set-tab-content-border: null, $set-tab-content-color: null, $set-tab-content-padding: null, $set-thumbnail-border: null, $set-thumbnail-margin-bottom: null, $set-thumbnail-shadow: null, $set-thumbnail-shadow-hover: null, $set-thumbnail-transition: null, $set-thumbnail-radius: null, $set-titlebar-background: null, $set-titlebar-color: null, $set-titlebar-padding: null, $set-titlebar-text-font-weight: null, $set-titlebar-icon-color: null, $set-titlebar-icon-color-hover: null, $set-titlebar-icon-spacing: null, $set-has-tip-cursor: null, $set-has-tip-font-weight: null, $set-has-tip-border-bottom: null, $set-tooltip-background-color: null, $set-tooltip-color: null, $set-tooltip-padding: null, $set-tooltip-max-width: null, $set-tooltip-font-size: null, $set-tooltip-pip-width: null, $set-tooltip-pip-height: null, $set-tooltip-radius: null, $set-topbar-padding: null, $set-topbar-background: null, $set-topbar-submenu-background: null, $set-topbar-title-spacing: null, $set-topbar-input-width: null, $set-topbar-unstack-breakpoint: null, $set-xy-grid: null, $set-grid-container: null, $set-grid-columns: null, $set-grid-margin-gutters: null, $set-grid-padding-gutters: null, $set-grid-container-padding: null, $set-grid-container-max: null, $set-xy-block-grid-max: null) {
+    @if $set-global-font-size {
+        $global-font-size: $set-global-font-size !global;
+    }
+    @else {
+        $global-font-size: $-global-font-size !global;
+    }
+    @if $set-global-width {
+        $global-width: $set-global-width !global;
+    }
+    @else {
+        $global-width: $-global-width !global;
+    }
+    @if $set-global-lineheight {
+        $global-lineheight: $set-global-lineheight !global;
+    }
+    @else {
+        $global-lineheight: $-global-lineheight !global;
+    }
+    @if $set-foundation-palette {
+        $foundation-palette: $set-foundation-palette !global;
+    }
+    @else {
+        $foundation-palette: $-foundation-palette !global;
+    }
+    @if $set-light-gray {
+        $light-gray: $set-light-gray !global;
+    }
+    @else {
+        $light-gray: $-light-gray !global;
+    }
+    @if $set-medium-gray {
+        $medium-gray: $set-medium-gray !global;
+    }
+    @else {
+        $medium-gray: $-medium-gray !global;
+    }
+    @if $set-dark-gray {
+        $dark-gray: $set-dark-gray !global;
+    }
+    @else {
+        $dark-gray: $-dark-gray !global;
+    }
+    @if $set-black {
+        $black: $set-black !global;
+    }
+    @else {
+        $black: $-black !global;
+    }
+    @if $set-white {
+        $white: $set-white !global;
+    }
+    @else {
+        $white: $-white !global;
+    }
+    @if $set-body-background {
+        $body-background: $set-body-background !global;
+    }
+    @else {
+        $body-background: $-body-background !global;
+    }
+    @if $set-body-font-color {
+        $body-font-color: $set-body-font-color !global;
+    }
+    @else {
+        $body-font-color: $-body-font-color !global;
+    }
+    @if $set-body-font-family {
+        $body-font-family: $set-body-font-family !global;
+    }
+    @else {
+        $body-font-family: $-body-font-family !global;
+    }
+    @if $set-body-antialiased {
+        $body-antialiased: $set-body-antialiased !global;
+    }
+    @else {
+        $body-antialiased: $-body-antialiased !global;
+    }
+    @if $set-global-margin {
+        $global-margin: $set-global-margin !global;
+    }
+    @else {
+        $global-margin: $-global-margin !global;
+    }
+    @if $set-global-padding {
+        $global-padding: $set-global-padding !global;
+    }
+    @else {
+        $global-padding: $-global-padding !global;
+    }
+    @if $set-global-position {
+        $global-position: $set-global-position !global;
+    }
+    @else {
+        $global-position: $-global-position !global;
+    }
+    @if $set-global-weight-normal {
+        $global-weight-normal: $set-global-weight-normal !global;
+    }
+    @else {
+        $global-weight-normal: $-global-weight-normal !global;
+    }
+    @if $set-global-weight-bold {
+        $global-weight-bold: $set-global-weight-bold !global;
+    }
+    @else {
+        $global-weight-bold: $-global-weight-bold !global;
+    }
+    @if $set-global-radius {
+        $global-radius: $set-global-radius !global;
+    }
+    @else {
+        $global-radius: $-global-radius !global;
+    }
+    @if $set-global-menu-padding {
+        $global-menu-padding: $set-global-menu-padding !global;
+    }
+    @else {
+        $global-menu-padding: $-global-menu-padding !global;
+    }
+    @if $set-global-menu-nested-margin {
+        $global-menu-nested-margin: $set-global-menu-nested-margin !global;
+    }
+    @else {
+        $global-menu-nested-margin: $-global-menu-nested-margin !global;
+    }
+    @if $set-global-text-direction {
+        $global-text-direction: $set-global-text-direction !global;
+    }
+    @else {
+        $global-text-direction: $-global-text-direction !global;
+    }
+    @if $set-global-flexbox {
+        $global-flexbox: $set-global-flexbox !global;
+    }
+    @else {
+        $global-flexbox: $-global-flexbox !global;
+    }
+    @if $set-global-prototype-breakpoints {
+        $global-prototype-breakpoints: $set-global-prototype-breakpoints !global;
+    }
+    @else {
+        $global-prototype-breakpoints: $-global-prototype-breakpoints !global;
+    }
+    @if $set-global-button-cursor {
+        $global-button-cursor: $set-global-button-cursor !global;
+    }
+    @else {
+        $global-button-cursor: $-global-button-cursor !global;
+    }
+    @if $set-global-left {
+        $global-left: $set-global-left !global;
+    }
+    @else {
+        $global-left: $-global-left !global;
+    }
+    @if $set-global-right {
+        $global-right: $set-global-right !global;
+    }
+    @else {
+        $global-right: $-global-right !global;
+    }
+    @if $set-zf-flex-justify {
+        $zf-flex-justify: $set-zf-flex-justify !global;
+    }
+    @else {
+        $zf-flex-justify: $-zf-flex-justify !global;
+    }
+    @if $set-global-color-pick-contrast-tolerance {
+        $global-color-pick-contrast-tolerance: $set-global-color-pick-contrast-tolerance !global;
+    }
+    @else {
+        $global-color-pick-contrast-tolerance: $-global-color-pick-contrast-tolerance !global;
+    }
+    @if $set-print-transparent-backgrounds {
+        $print-transparent-backgrounds: $set-print-transparent-backgrounds !global;
+    }
+    @else {
+        $print-transparent-backgrounds: $-print-transparent-backgrounds !global;
+    }
+    @if $set-print-hrefs {
+        $print-hrefs: $set-print-hrefs !global;
+    }
+    @else {
+        $print-hrefs: $-print-hrefs !global;
+    }
+    @if $set-breakpoints {
+        $breakpoints: $set-breakpoints !global;
+    }
+    @else {
+        $breakpoints: $-breakpoints !global;
+    }
+    @if $set-breakpoints-hidpi {
+        $breakpoints-hidpi: $set-breakpoints-hidpi !global;
+    }
+    @else {
+        $breakpoints-hidpi: $-breakpoints-hidpi !global;
+    }
+    @if $set-print-breakpoint {
+        $print-breakpoint: $set-print-breakpoint !global;
+    }
+    @else {
+        $print-breakpoint: $-print-breakpoint !global;
+    }
+    @if $set-breakpoint-classes {
+        $breakpoint-classes: $set-breakpoint-classes !global;
+    }
+    @else {
+        $breakpoint-classes: $-breakpoint-classes !global;
+    }
+    @if $set-grid-row-width {
+        $grid-row-width: $set-grid-row-width !global;
+    }
+    @else {
+        $grid-row-width: $-grid-row-width !global;
+    }
+    @if $set-grid-column-count {
+        $grid-column-count: $set-grid-column-count !global;
+    }
+    @else {
+        $grid-column-count: $-grid-column-count !global;
+    }
+    @if $set-grid-column-gutter {
+        $grid-column-gutter: $set-grid-column-gutter !global;
+    }
+    @else {
+        $grid-column-gutter: $-grid-column-gutter !global;
+    }
+    @if $set-grid-column-align-edge {
+        $grid-column-align-edge: $set-grid-column-align-edge !global;
+    }
+    @else {
+        $grid-column-align-edge: $-grid-column-align-edge !global;
+    }
+    @if $set-grid-column-alias {
+        $grid-column-alias: $set-grid-column-alias !global;
+    }
+    @else {
+        $grid-column-alias: $-grid-column-alias !global;
+    }
+    @if $set-block-grid-max {
+        $block-grid-max: $set-block-grid-max !global;
+    }
+    @else {
+        $block-grid-max: $-block-grid-max !global;
+    }
+    @if $set-header-font-family {
+        $header-font-family: $set-header-font-family !global;
+    }
+    @else {
+        $header-font-family: $-header-font-family !global;
+    }
+    @if $set-header-font-weight {
+        $header-font-weight: $set-header-font-weight !global;
+    }
+    @else {
+        $header-font-weight: $-header-font-weight !global;
+    }
+    @if $set-header-font-style {
+        $header-font-style: $set-header-font-style !global;
+    }
+    @else {
+        $header-font-style: $-header-font-style !global;
+    }
+    @if $set-font-family-monospace {
+        $font-family-monospace: $set-font-family-monospace !global;
+    }
+    @else {
+        $font-family-monospace: $-font-family-monospace !global;
+    }
+    @if $set-header-color {
+        $header-color: $set-header-color !global;
+    }
+    @else {
+        $header-color: $-header-color !global;
+    }
+    @if $set-header-lineheight {
+        $header-lineheight: $set-header-lineheight !global;
+    }
+    @else {
+        $header-lineheight: $-header-lineheight !global;
+    }
+    @if $set-header-margin-bottom {
+        $header-margin-bottom: $set-header-margin-bottom !global;
+    }
+    @else {
+        $header-margin-bottom: $-header-margin-bottom !global;
+    }
+    @if $set-header-styles {
+        $header-styles: $set-header-styles !global;
+    }
+    @else {
+        $header-styles: $-header-styles !global;
+    }
+    @if $set-header-text-rendering {
+        $header-text-rendering: $set-header-text-rendering !global;
+    }
+    @else {
+        $header-text-rendering: $-header-text-rendering !global;
+    }
+    @if $set-small-font-size {
+        $small-font-size: $set-small-font-size !global;
+    }
+    @else {
+        $small-font-size: $-small-font-size !global;
+    }
+    @if $set-header-small-font-color {
+        $header-small-font-color: $set-header-small-font-color !global;
+    }
+    @else {
+        $header-small-font-color: $-header-small-font-color !global;
+    }
+    @if $set-paragraph-lineheight {
+        $paragraph-lineheight: $set-paragraph-lineheight !global;
+    }
+    @else {
+        $paragraph-lineheight: $-paragraph-lineheight !global;
+    }
+    @if $set-paragraph-margin-bottom {
+        $paragraph-margin-bottom: $set-paragraph-margin-bottom !global;
+    }
+    @else {
+        $paragraph-margin-bottom: $-paragraph-margin-bottom !global;
+    }
+    @if $set-paragraph-text-rendering {
+        $paragraph-text-rendering: $set-paragraph-text-rendering !global;
+    }
+    @else {
+        $paragraph-text-rendering: $-paragraph-text-rendering !global;
+    }
+    @if $set-enable-code-inline {
+        $enable-code-inline: $set-enable-code-inline !global;
+    }
+    @else {
+        $enable-code-inline: $-enable-code-inline !global;
+    }
+    @if $set-anchor-color {
+        $anchor-color: $set-anchor-color !global;
+    }
+    @else {
+        $anchor-color: $-anchor-color !global;
+    }
+    @if $set-anchor-color-hover {
+        $anchor-color-hover: $set-anchor-color-hover !global;
+    }
+    @else {
+        $anchor-color-hover: $-anchor-color-hover !global;
+    }
+    @if $set-anchor-text-decoration {
+        $anchor-text-decoration: $set-anchor-text-decoration !global;
+    }
+    @else {
+        $anchor-text-decoration: $-anchor-text-decoration !global;
+    }
+    @if $set-anchor-text-decoration-hover {
+        $anchor-text-decoration-hover: $set-anchor-text-decoration-hover !global;
+    }
+    @else {
+        $anchor-text-decoration-hover: $-anchor-text-decoration-hover !global;
+    }
+    @if $set-hr-width {
+        $hr-width: $set-hr-width !global;
+    }
+    @else {
+        $hr-width: $-hr-width !global;
+    }
+    @if $set-hr-border {
+        $hr-border: $set-hr-border !global;
+    }
+    @else {
+        $hr-border: $-hr-border !global;
+    }
+    @if $set-hr-margin {
+        $hr-margin: $set-hr-margin !global;
+    }
+    @else {
+        $hr-margin: $-hr-margin !global;
+    }
+    @if $set-list-lineheight {
+        $list-lineheight: $set-list-lineheight !global;
+    }
+    @else {
+        $list-lineheight: $-list-lineheight !global;
+    }
+    @if $set-list-margin-bottom {
+        $list-margin-bottom: $set-list-margin-bottom !global;
+    }
+    @else {
+        $list-margin-bottom: $-list-margin-bottom !global;
+    }
+    @if $set-list-style-type {
+        $list-style-type: $set-list-style-type !global;
+    }
+    @else {
+        $list-style-type: $-list-style-type !global;
+    }
+    @if $set-list-style-position {
+        $list-style-position: $set-list-style-position !global;
+    }
+    @else {
+        $list-style-position: $-list-style-position !global;
+    }
+    @if $set-list-side-margin {
+        $list-side-margin: $set-list-side-margin !global;
+    }
+    @else {
+        $list-side-margin: $-list-side-margin !global;
+    }
+    @if $set-list-nested-side-margin {
+        $list-nested-side-margin: $set-list-nested-side-margin !global;
+    }
+    @else {
+        $list-nested-side-margin: $-list-nested-side-margin !global;
+    }
+    @if $set-defnlist-margin-bottom {
+        $defnlist-margin-bottom: $set-defnlist-margin-bottom !global;
+    }
+    @else {
+        $defnlist-margin-bottom: $-defnlist-margin-bottom !global;
+    }
+    @if $set-defnlist-term-weight {
+        $defnlist-term-weight: $set-defnlist-term-weight !global;
+    }
+    @else {
+        $defnlist-term-weight: $-defnlist-term-weight !global;
+    }
+    @if $set-defnlist-term-margin-bottom {
+        $defnlist-term-margin-bottom: $set-defnlist-term-margin-bottom !global;
+    }
+    @else {
+        $defnlist-term-margin-bottom: $-defnlist-term-margin-bottom !global;
+    }
+    @if $set-blockquote-color {
+        $blockquote-color: $set-blockquote-color !global;
+    }
+    @else {
+        $blockquote-color: $-blockquote-color !global;
+    }
+    @if $set-blockquote-padding {
+        $blockquote-padding: $set-blockquote-padding !global;
+    }
+    @else {
+        $blockquote-padding: $-blockquote-padding !global;
+    }
+    @if $set-blockquote-border {
+        $blockquote-border: $set-blockquote-border !global;
+    }
+    @else {
+        $blockquote-border: $-blockquote-border !global;
+    }
+    @if $set-enable-cite-block {
+        $enable-cite-block: $set-enable-cite-block !global;
+    }
+    @else {
+        $enable-cite-block: $-enable-cite-block !global;
+    }
+    @if $set-keystroke-font {
+        $keystroke-font: $set-keystroke-font !global;
+    }
+    @else {
+        $keystroke-font: $-keystroke-font !global;
+    }
+    @if $set-keystroke-color {
+        $keystroke-color: $set-keystroke-color !global;
+    }
+    @else {
+        $keystroke-color: $-keystroke-color !global;
+    }
+    @if $set-keystroke-background {
+        $keystroke-background: $set-keystroke-background !global;
+    }
+    @else {
+        $keystroke-background: $-keystroke-background !global;
+    }
+    @if $set-keystroke-padding {
+        $keystroke-padding: $set-keystroke-padding !global;
+    }
+    @else {
+        $keystroke-padding: $-keystroke-padding !global;
+    }
+    @if $set-keystroke-radius {
+        $keystroke-radius: $set-keystroke-radius !global;
+    }
+    @else {
+        $keystroke-radius: $-keystroke-radius !global;
+    }
+    @if $set-abbr-underline {
+        $abbr-underline: $set-abbr-underline !global;
+    }
+    @else {
+        $abbr-underline: $-abbr-underline !global;
+    }
+    @if $set-lead-font-size {
+        $lead-font-size: $set-lead-font-size !global;
+    }
+    @else {
+        $lead-font-size: $-lead-font-size !global;
+    }
+    @if $set-lead-lineheight {
+        $lead-lineheight: $set-lead-lineheight !global;
+    }
+    @else {
+        $lead-lineheight: $-lead-lineheight !global;
+    }
+    @if $set-subheader-lineheight {
+        $subheader-lineheight: $set-subheader-lineheight !global;
+    }
+    @else {
+        $subheader-lineheight: $-subheader-lineheight !global;
+    }
+    @if $set-subheader-color {
+        $subheader-color: $set-subheader-color !global;
+    }
+    @else {
+        $subheader-color: $-subheader-color !global;
+    }
+    @if $set-subheader-font-weight {
+        $subheader-font-weight: $set-subheader-font-weight !global;
+    }
+    @else {
+        $subheader-font-weight: $-subheader-font-weight !global;
+    }
+    @if $set-subheader-margin-top {
+        $subheader-margin-top: $set-subheader-margin-top !global;
+    }
+    @else {
+        $subheader-margin-top: $-subheader-margin-top !global;
+    }
+    @if $set-subheader-margin-bottom {
+        $subheader-margin-bottom: $set-subheader-margin-bottom !global;
+    }
+    @else {
+        $subheader-margin-bottom: $-subheader-margin-bottom !global;
+    }
+    @if $set-stat-font-size {
+        $stat-font-size: $set-stat-font-size !global;
+    }
+    @else {
+        $stat-font-size: $-stat-font-size !global;
+    }
+    @if $set-cite-color {
+        $cite-color: $set-cite-color !global;
+    }
+    @else {
+        $cite-color: $-cite-color !global;
+    }
+    @if $set-cite-font-size {
+        $cite-font-size: $set-cite-font-size !global;
+    }
+    @else {
+        $cite-font-size: $-cite-font-size !global;
+    }
+    @if $set-cite-pseudo-content {
+        $cite-pseudo-content: $set-cite-pseudo-content !global;
+    }
+    @else {
+        $cite-pseudo-content: $-cite-pseudo-content !global;
+    }
+    @if $set-code-color {
+        $code-color: $set-code-color !global;
+    }
+    @else {
+        $code-color: $-code-color !global;
+    }
+    @if $set-code-font-family {
+        $code-font-family: $set-code-font-family !global;
+    }
+    @else {
+        $code-font-family: $-code-font-family !global;
+    }
+    @if $set-code-font-weight {
+        $code-font-weight: $set-code-font-weight !global;
+    }
+    @else {
+        $code-font-weight: $-code-font-weight !global;
+    }
+    @if $set-code-background {
+        $code-background: $set-code-background !global;
+    }
+    @else {
+        $code-background: $-code-background !global;
+    }
+    @if $set-code-border {
+        $code-border: $set-code-border !global;
+    }
+    @else {
+        $code-border: $-code-border !global;
+    }
+    @if $set-code-padding {
+        $code-padding: $set-code-padding !global;
+    }
+    @else {
+        $code-padding: $-code-padding !global;
+    }
+    @if $set-code-block-padding {
+        $code-block-padding: $set-code-block-padding !global;
+    }
+    @else {
+        $code-block-padding: $-code-block-padding !global;
+    }
+    @if $set-code-block-margin-bottom {
+        $code-block-margin-bottom: $set-code-block-margin-bottom !global;
+    }
+    @else {
+        $code-block-margin-bottom: $-code-block-margin-bottom !global;
+    }
+    @if $set-abide-inputs {
+        $abide-inputs: $set-abide-inputs !global;
+    }
+    @else {
+        $abide-inputs: $-abide-inputs !global;
+    }
+    @if $set-abide-labels {
+        $abide-labels: $set-abide-labels !global;
+    }
+    @else {
+        $abide-labels: $-abide-labels !global;
+    }
+    @if $set-input-background-invalid {
+        $input-background-invalid: $set-input-background-invalid !global;
+    }
+    @else {
+        $input-background-invalid: $-input-background-invalid !global;
+    }
+    @if $set-form-label-color-invalid {
+        $form-label-color-invalid: $set-form-label-color-invalid !global;
+    }
+    @else {
+        $form-label-color-invalid: $-form-label-color-invalid !global;
+    }
+    @if $set-input-error-color {
+        $input-error-color: $set-input-error-color !global;
+    }
+    @else {
+        $input-error-color: $-input-error-color !global;
+    }
+    @if $set-input-error-font-size {
+        $input-error-font-size: $set-input-error-font-size !global;
+    }
+    @else {
+        $input-error-font-size: $-input-error-font-size !global;
+    }
+    @if $set-input-error-font-weight {
+        $input-error-font-weight: $set-input-error-font-weight !global;
+    }
+    @else {
+        $input-error-font-weight: $-input-error-font-weight !global;
+    }
+    @if $set-accordion-background {
+        $accordion-background: $set-accordion-background !global;
+    }
+    @else {
+        $accordion-background: $-accordion-background !global;
+    }
+    @if $set-accordion-plusminus {
+        $accordion-plusminus: $set-accordion-plusminus !global;
+    }
+    @else {
+        $accordion-plusminus: $-accordion-plusminus !global;
+    }
+    @if $set-accordion-plus-content {
+        $accordion-plus-content: $set-accordion-plus-content !global;
+    }
+    @else {
+        $accordion-plus-content: $-accordion-plus-content !global;
+    }
+    @if $set-accordion-minus-content {
+        $accordion-minus-content: $set-accordion-minus-content !global;
+    }
+    @else {
+        $accordion-minus-content: $-accordion-minus-content !global;
+    }
+    @if $set-accordion-title-font-size {
+        $accordion-title-font-size: $set-accordion-title-font-size !global;
+    }
+    @else {
+        $accordion-title-font-size: $-accordion-title-font-size !global;
+    }
+    @if $set-accordion-item-color {
+        $accordion-item-color: $set-accordion-item-color !global;
+    }
+    @else {
+        $accordion-item-color: $-accordion-item-color !global;
+    }
+    @if $set-accordion-item-background-hover {
+        $accordion-item-background-hover: $set-accordion-item-background-hover !global;
+    }
+    @else {
+        $accordion-item-background-hover: $-accordion-item-background-hover !global;
+    }
+    @if $set-accordion-item-padding {
+        $accordion-item-padding: $set-accordion-item-padding !global;
+    }
+    @else {
+        $accordion-item-padding: $-accordion-item-padding !global;
+    }
+    @if $set-accordion-content-background {
+        $accordion-content-background: $set-accordion-content-background !global;
+    }
+    @else {
+        $accordion-content-background: $-accordion-content-background !global;
+    }
+    @if $set-accordion-content-border {
+        $accordion-content-border: $set-accordion-content-border !global;
+    }
+    @else {
+        $accordion-content-border: $-accordion-content-border !global;
+    }
+    @if $set-accordion-content-color {
+        $accordion-content-color: $set-accordion-content-color !global;
+    }
+    @else {
+        $accordion-content-color: $-accordion-content-color !global;
+    }
+    @if $set-accordion-content-padding {
+        $accordion-content-padding: $set-accordion-content-padding !global;
+    }
+    @else {
+        $accordion-content-padding: $-accordion-content-padding !global;
+    }
+    @if $set-accordionmenu-padding {
+        $accordionmenu-padding: $set-accordionmenu-padding !global;
+    }
+    @else {
+        $accordionmenu-padding: $-accordionmenu-padding !global;
+    }
+    @if $set-accordionmenu-nested-margin {
+        $accordionmenu-nested-margin: $set-accordionmenu-nested-margin !global;
+    }
+    @else {
+        $accordionmenu-nested-margin: $-accordionmenu-nested-margin !global;
+    }
+    @if $set-accordionmenu-submenu-padding {
+        $accordionmenu-submenu-padding: $set-accordionmenu-submenu-padding !global;
+    }
+    @else {
+        $accordionmenu-submenu-padding: $-accordionmenu-submenu-padding !global;
+    }
+    @if $set-accordionmenu-arrows {
+        $accordionmenu-arrows: $set-accordionmenu-arrows !global;
+    }
+    @else {
+        $accordionmenu-arrows: $-accordionmenu-arrows !global;
+    }
+    @if $set-accordionmenu-arrow-color {
+        $accordionmenu-arrow-color: $set-accordionmenu-arrow-color !global;
+    }
+    @else {
+        $accordionmenu-arrow-color: $-accordionmenu-arrow-color !global;
+    }
+    @if $set-accordionmenu-item-background {
+        $accordionmenu-item-background: $set-accordionmenu-item-background !global;
+    }
+    @else {
+        $accordionmenu-item-background: $-accordionmenu-item-background !global;
+    }
+    @if $set-accordionmenu-border {
+        $accordionmenu-border: $set-accordionmenu-border !global;
+    }
+    @else {
+        $accordionmenu-border: $-accordionmenu-border !global;
+    }
+    @if $set-accordionmenu-submenu-toggle-background {
+        $accordionmenu-submenu-toggle-background: $set-accordionmenu-submenu-toggle-background !global;
+    }
+    @else {
+        $accordionmenu-submenu-toggle-background: $-accordionmenu-submenu-toggle-background !global;
+    }
+    @if $set-accordion-submenu-toggle-border {
+        $accordion-submenu-toggle-border: $set-accordion-submenu-toggle-border !global;
+    }
+    @else {
+        $accordion-submenu-toggle-border: $-accordion-submenu-toggle-border !global;
+    }
+    @if $set-accordionmenu-submenu-toggle-width {
+        $accordionmenu-submenu-toggle-width: $set-accordionmenu-submenu-toggle-width !global;
+    }
+    @else {
+        $accordionmenu-submenu-toggle-width: $-accordionmenu-submenu-toggle-width !global;
+    }
+    @if $set-accordionmenu-submenu-toggle-height {
+        $accordionmenu-submenu-toggle-height: $set-accordionmenu-submenu-toggle-height !global;
+    }
+    @else {
+        $accordionmenu-submenu-toggle-height: $-accordionmenu-submenu-toggle-height !global;
+    }
+    @if $set-accordionmenu-arrow-size {
+        $accordionmenu-arrow-size: $set-accordionmenu-arrow-size !global;
+    }
+    @else {
+        $accordionmenu-arrow-size: $-accordionmenu-arrow-size !global;
+    }
+    @if $set-badge-background {
+        $badge-background: $set-badge-background !global;
+    }
+    @else {
+        $badge-background: $-badge-background !global;
+    }
+    @if $set-badge-color {
+        $badge-color: $set-badge-color !global;
+    }
+    @else {
+        $badge-color: $-badge-color !global;
+    }
+    @if $set-badge-color-alt {
+        $badge-color-alt: $set-badge-color-alt !global;
+    }
+    @else {
+        $badge-color-alt: $-badge-color-alt !global;
+    }
+    @if $set-badge-palette {
+        $badge-palette: $set-badge-palette !global;
+    }
+    @else {
+        $badge-palette: $-badge-palette !global;
+    }
+    @if $set-badge-padding {
+        $badge-padding: $set-badge-padding !global;
+    }
+    @else {
+        $badge-padding: $-badge-padding !global;
+    }
+    @if $set-badge-minwidth {
+        $badge-minwidth: $set-badge-minwidth !global;
+    }
+    @else {
+        $badge-minwidth: $-badge-minwidth !global;
+    }
+    @if $set-badge-font-size {
+        $badge-font-size: $set-badge-font-size !global;
+    }
+    @else {
+        $badge-font-size: $-badge-font-size !global;
+    }
+    @if $set-breadcrumbs-margin {
+        $breadcrumbs-margin: $set-breadcrumbs-margin !global;
+    }
+    @else {
+        $breadcrumbs-margin: $-breadcrumbs-margin !global;
+    }
+    @if $set-breadcrumbs-item-font-size {
+        $breadcrumbs-item-font-size: $set-breadcrumbs-item-font-size !global;
+    }
+    @else {
+        $breadcrumbs-item-font-size: $-breadcrumbs-item-font-size !global;
+    }
+    @if $set-breadcrumbs-item-color {
+        $breadcrumbs-item-color: $set-breadcrumbs-item-color !global;
+    }
+    @else {
+        $breadcrumbs-item-color: $-breadcrumbs-item-color !global;
+    }
+    @if $set-breadcrumbs-item-color-current {
+        $breadcrumbs-item-color-current: $set-breadcrumbs-item-color-current !global;
+    }
+    @else {
+        $breadcrumbs-item-color-current: $-breadcrumbs-item-color-current !global;
+    }
+    @if $set-breadcrumbs-item-color-disabled {
+        $breadcrumbs-item-color-disabled: $set-breadcrumbs-item-color-disabled !global;
+    }
+    @else {
+        $breadcrumbs-item-color-disabled: $-breadcrumbs-item-color-disabled !global;
+    }
+    @if $set-breadcrumbs-item-margin {
+        $breadcrumbs-item-margin: $set-breadcrumbs-item-margin !global;
+    }
+    @else {
+        $breadcrumbs-item-margin: $-breadcrumbs-item-margin !global;
+    }
+    @if $set-breadcrumbs-item-uppercase {
+        $breadcrumbs-item-uppercase: $set-breadcrumbs-item-uppercase !global;
+    }
+    @else {
+        $breadcrumbs-item-uppercase: $-breadcrumbs-item-uppercase !global;
+    }
+    @if $set-breadcrumbs-item-separator {
+        $breadcrumbs-item-separator: $set-breadcrumbs-item-separator !global;
+    }
+    @else {
+        $breadcrumbs-item-separator: $-breadcrumbs-item-separator !global;
+    }
+    @if $set-breadcrumbs-item-separator-item {
+        $breadcrumbs-item-separator-item: $set-breadcrumbs-item-separator-item !global;
+    }
+    @else {
+        $breadcrumbs-item-separator-item: $-breadcrumbs-item-separator-item !global;
+    }
+    @if $set-breadcrumbs-item-separator-item-rtl {
+        $breadcrumbs-item-separator-item-rtl: $set-breadcrumbs-item-separator-item-rtl !global;
+    }
+    @else {
+        $breadcrumbs-item-separator-item-rtl: $-breadcrumbs-item-separator-item-rtl !global;
+    }
+    @if $set-breadcrumbs-item-separator-color {
+        $breadcrumbs-item-separator-color: $set-breadcrumbs-item-separator-color !global;
+    }
+    @else {
+        $breadcrumbs-item-separator-color: $-breadcrumbs-item-separator-color !global;
+    }
+    @if $set-button-font-family {
+        $button-font-family: $set-button-font-family !global;
+    }
+    @else {
+        $button-font-family: $-button-font-family !global;
+    }
+    @if $set-button-font-weight {
+        $button-font-weight: $set-button-font-weight !global;
+    }
+    @else {
+        $button-font-weight: $-button-font-weight !global;
+    }
+    @if $set-button-padding {
+        $button-padding: $set-button-padding !global;
+    }
+    @else {
+        $button-padding: $-button-padding !global;
+    }
+    @if $set-button-margin {
+        $button-margin: $set-button-margin !global;
+    }
+    @else {
+        $button-margin: $-button-margin !global;
+    }
+    @if $set-button-fill {
+        $button-fill: $set-button-fill !global;
+    }
+    @else {
+        $button-fill: $-button-fill !global;
+    }
+    @if $set-button-background {
+        $button-background: $set-button-background !global;
+    }
+    @else {
+        $button-background: $-button-background !global;
+    }
+    @if $set-button-background-hover {
+        $button-background-hover: $set-button-background-hover !global;
+    }
+    @else {
+        $button-background-hover: $-button-background-hover !global;
+    }
+    @if $set-button-color {
+        $button-color: $set-button-color !global;
+    }
+    @else {
+        $button-color: $-button-color !global;
+    }
+    @if $set-button-color-alt {
+        $button-color-alt: $set-button-color-alt !global;
+    }
+    @else {
+        $button-color-alt: $-button-color-alt !global;
+    }
+    @if $set-button-radius {
+        $button-radius: $set-button-radius !global;
+    }
+    @else {
+        $button-radius: $-button-radius !global;
+    }
+    @if $set-button-border {
+        $button-border: $set-button-border !global;
+    }
+    @else {
+        $button-border: $-button-border !global;
+    }
+    @if $set-button-hollow-border-width {
+        $button-hollow-border-width: $set-button-hollow-border-width !global;
+    }
+    @else {
+        $button-hollow-border-width: $-button-hollow-border-width !global;
+    }
+    @if $set-button-sizes {
+        $button-sizes: $set-button-sizes !global;
+    }
+    @else {
+        $button-sizes: $-button-sizes !global;
+    }
+    @if $set-button-palette {
+        $button-palette: $set-button-palette !global;
+    }
+    @else {
+        $button-palette: $-button-palette !global;
+    }
+    @if $set-button-opacity-disabled {
+        $button-opacity-disabled: $set-button-opacity-disabled !global;
+    }
+    @else {
+        $button-opacity-disabled: $-button-opacity-disabled !global;
+    }
+    @if $set-button-background-hover-lightness {
+        $button-background-hover-lightness: $set-button-background-hover-lightness !global;
+    }
+    @else {
+        $button-background-hover-lightness: $-button-background-hover-lightness !global;
+    }
+    @if $set-button-hollow-hover-lightness {
+        $button-hollow-hover-lightness: $set-button-hollow-hover-lightness !global;
+    }
+    @else {
+        $button-hollow-hover-lightness: $-button-hollow-hover-lightness !global;
+    }
+    @if $set-button-transition {
+        $button-transition: $set-button-transition !global;
+    }
+    @else {
+        $button-transition: $-button-transition !global;
+    }
+    @if $set-button-responsive-expanded {
+        $button-responsive-expanded: $set-button-responsive-expanded !global;
+    }
+    @else {
+        $button-responsive-expanded: $-button-responsive-expanded !global;
+    }
+    @if $set-buttongroup-margin {
+        $buttongroup-margin: $set-buttongroup-margin !global;
+    }
+    @else {
+        $buttongroup-margin: $-buttongroup-margin !global;
+    }
+    @if $set-buttongroup-spacing {
+        $buttongroup-spacing: $set-buttongroup-spacing !global;
+    }
+    @else {
+        $buttongroup-spacing: $-buttongroup-spacing !global;
+    }
+    @if $set-buttongroup-child-selector {
+        $buttongroup-child-selector: $set-buttongroup-child-selector !global;
+    }
+    @else {
+        $buttongroup-child-selector: $-buttongroup-child-selector !global;
+    }
+    @if $set-buttongroup-expand-max {
+        $buttongroup-expand-max: $set-buttongroup-expand-max !global;
+    }
+    @else {
+        $buttongroup-expand-max: $-buttongroup-expand-max !global;
+    }
+    @if $set-buttongroup-radius-on-each {
+        $buttongroup-radius-on-each: $set-buttongroup-radius-on-each !global;
+    }
+    @else {
+        $buttongroup-radius-on-each: $-buttongroup-radius-on-each !global;
+    }
+    @if $set-callout-background {
+        $callout-background: $set-callout-background !global;
+    }
+    @else {
+        $callout-background: $-callout-background !global;
+    }
+    @if $set-callout-background-fade {
+        $callout-background-fade: $set-callout-background-fade !global;
+    }
+    @else {
+        $callout-background-fade: $-callout-background-fade !global;
+    }
+    @if $set-callout-border {
+        $callout-border: $set-callout-border !global;
+    }
+    @else {
+        $callout-border: $-callout-border !global;
+    }
+    @if $set-callout-margin {
+        $callout-margin: $set-callout-margin !global;
+    }
+    @else {
+        $callout-margin: $-callout-margin !global;
+    }
+    @if $set-callout-sizes {
+        $callout-sizes: $set-callout-sizes !global;
+    }
+    @else {
+        $callout-sizes: $-callout-sizes !global;
+    }
+    @if $set-callout-font-color {
+        $callout-font-color: $set-callout-font-color !global;
+    }
+    @else {
+        $callout-font-color: $-callout-font-color !global;
+    }
+    @if $set-callout-font-color-alt {
+        $callout-font-color-alt: $set-callout-font-color-alt !global;
+    }
+    @else {
+        $callout-font-color-alt: $-callout-font-color-alt !global;
+    }
+    @if $set-callout-radius {
+        $callout-radius: $set-callout-radius !global;
+    }
+    @else {
+        $callout-radius: $-callout-radius !global;
+    }
+    @if $set-callout-link-tint {
+        $callout-link-tint: $set-callout-link-tint !global;
+    }
+    @else {
+        $callout-link-tint: $-callout-link-tint !global;
+    }
+    @if $set-card-background {
+        $card-background: $set-card-background !global;
+    }
+    @else {
+        $card-background: $-card-background !global;
+    }
+    @if $set-card-font-color {
+        $card-font-color: $set-card-font-color !global;
+    }
+    @else {
+        $card-font-color: $-card-font-color !global;
+    }
+    @if $set-card-divider-background {
+        $card-divider-background: $set-card-divider-background !global;
+    }
+    @else {
+        $card-divider-background: $-card-divider-background !global;
+    }
+    @if $set-card-border {
+        $card-border: $set-card-border !global;
+    }
+    @else {
+        $card-border: $-card-border !global;
+    }
+    @if $set-card-shadow {
+        $card-shadow: $set-card-shadow !global;
+    }
+    @else {
+        $card-shadow: $-card-shadow !global;
+    }
+    @if $set-card-border-radius {
+        $card-border-radius: $set-card-border-radius !global;
+    }
+    @else {
+        $card-border-radius: $-card-border-radius !global;
+    }
+    @if $set-card-padding {
+        $card-padding: $set-card-padding !global;
+    }
+    @else {
+        $card-padding: $-card-padding !global;
+    }
+    @if $set-card-margin-bottom {
+        $card-margin-bottom: $set-card-margin-bottom !global;
+    }
+    @else {
+        $card-margin-bottom: $-card-margin-bottom !global;
+    }
+    @if $set-closebutton-position {
+        $closebutton-position: $set-closebutton-position !global;
+    }
+    @else {
+        $closebutton-position: $-closebutton-position !global;
+    }
+    @if $set-closebutton-z-index {
+        $closebutton-z-index: $set-closebutton-z-index !global;
+    }
+    @else {
+        $closebutton-z-index: $-closebutton-z-index !global;
+    }
+    @if $set-closebutton-default-size {
+        $closebutton-default-size: $set-closebutton-default-size !global;
+    }
+    @else {
+        $closebutton-default-size: $-closebutton-default-size !global;
+    }
+    @if $set-closebutton-offset-horizontal {
+        $closebutton-offset-horizontal: $set-closebutton-offset-horizontal !global;
+    }
+    @else {
+        $closebutton-offset-horizontal: $-closebutton-offset-horizontal !global;
+    }
+    @if $set-closebutton-offset-vertical {
+        $closebutton-offset-vertical: $set-closebutton-offset-vertical !global;
+    }
+    @else {
+        $closebutton-offset-vertical: $-closebutton-offset-vertical !global;
+    }
+    @if $set-closebutton-size {
+        $closebutton-size: $set-closebutton-size !global;
+    }
+    @else {
+        $closebutton-size: $-closebutton-size !global;
+    }
+    @if $set-closebutton-lineheight {
+        $closebutton-lineheight: $set-closebutton-lineheight !global;
+    }
+    @else {
+        $closebutton-lineheight: $-closebutton-lineheight !global;
+    }
+    @if $set-closebutton-color {
+        $closebutton-color: $set-closebutton-color !global;
+    }
+    @else {
+        $closebutton-color: $-closebutton-color !global;
+    }
+    @if $set-closebutton-color-hover {
+        $closebutton-color-hover: $set-closebutton-color-hover !global;
+    }
+    @else {
+        $closebutton-color-hover: $-closebutton-color-hover !global;
+    }
+    @if $set-drilldown-transition {
+        $drilldown-transition: $set-drilldown-transition !global;
+    }
+    @else {
+        $drilldown-transition: $-drilldown-transition !global;
+    }
+    @if $set-drilldown-arrows {
+        $drilldown-arrows: $set-drilldown-arrows !global;
+    }
+    @else {
+        $drilldown-arrows: $-drilldown-arrows !global;
+    }
+    @if $set-drilldown-padding {
+        $drilldown-padding: $set-drilldown-padding !global;
+    }
+    @else {
+        $drilldown-padding: $-drilldown-padding !global;
+    }
+    @if $set-drilldown-nested-margin {
+        $drilldown-nested-margin: $set-drilldown-nested-margin !global;
+    }
+    @else {
+        $drilldown-nested-margin: $-drilldown-nested-margin !global;
+    }
+    @if $set-drilldown-background {
+        $drilldown-background: $set-drilldown-background !global;
+    }
+    @else {
+        $drilldown-background: $-drilldown-background !global;
+    }
+    @if $set-drilldown-submenu-padding {
+        $drilldown-submenu-padding: $set-drilldown-submenu-padding !global;
+    }
+    @else {
+        $drilldown-submenu-padding: $-drilldown-submenu-padding !global;
+    }
+    @if $set-drilldown-submenu-background {
+        $drilldown-submenu-background: $set-drilldown-submenu-background !global;
+    }
+    @else {
+        $drilldown-submenu-background: $-drilldown-submenu-background !global;
+    }
+    @if $set-drilldown-arrow-color {
+        $drilldown-arrow-color: $set-drilldown-arrow-color !global;
+    }
+    @else {
+        $drilldown-arrow-color: $-drilldown-arrow-color !global;
+    }
+    @if $set-drilldown-arrow-size {
+        $drilldown-arrow-size: $set-drilldown-arrow-size !global;
+    }
+    @else {
+        $drilldown-arrow-size: $-drilldown-arrow-size !global;
+    }
+    @if $set-dropdown-padding {
+        $dropdown-padding: $set-dropdown-padding !global;
+    }
+    @else {
+        $dropdown-padding: $-dropdown-padding !global;
+    }
+    @if $set-dropdown-background {
+        $dropdown-background: $set-dropdown-background !global;
+    }
+    @else {
+        $dropdown-background: $-dropdown-background !global;
+    }
+    @if $set-dropdown-border {
+        $dropdown-border: $set-dropdown-border !global;
+    }
+    @else {
+        $dropdown-border: $-dropdown-border !global;
+    }
+    @if $set-dropdown-font-size {
+        $dropdown-font-size: $set-dropdown-font-size !global;
+    }
+    @else {
+        $dropdown-font-size: $-dropdown-font-size !global;
+    }
+    @if $set-dropdown-width {
+        $dropdown-width: $set-dropdown-width !global;
+    }
+    @else {
+        $dropdown-width: $-dropdown-width !global;
+    }
+    @if $set-dropdown-radius {
+        $dropdown-radius: $set-dropdown-radius !global;
+    }
+    @else {
+        $dropdown-radius: $-dropdown-radius !global;
+    }
+    @if $set-dropdown-sizes {
+        $dropdown-sizes: $set-dropdown-sizes !global;
+    }
+    @else {
+        $dropdown-sizes: $-dropdown-sizes !global;
+    }
+    @if $set-dropdownmenu-arrows {
+        $dropdownmenu-arrows: $set-dropdownmenu-arrows !global;
+    }
+    @else {
+        $dropdownmenu-arrows: $-dropdownmenu-arrows !global;
+    }
+    @if $set-dropdownmenu-arrow-color {
+        $dropdownmenu-arrow-color: $set-dropdownmenu-arrow-color !global;
+    }
+    @else {
+        $dropdownmenu-arrow-color: $-dropdownmenu-arrow-color !global;
+    }
+    @if $set-dropdownmenu-arrow-size {
+        $dropdownmenu-arrow-size: $set-dropdownmenu-arrow-size !global;
+    }
+    @else {
+        $dropdownmenu-arrow-size: $-dropdownmenu-arrow-size !global;
+    }
+    @if $set-dropdownmenu-arrow-padding {
+        $dropdownmenu-arrow-padding: $set-dropdownmenu-arrow-padding !global;
+    }
+    @else {
+        $dropdownmenu-arrow-padding: $-dropdownmenu-arrow-padding !global;
+    }
+    @if $set-dropdownmenu-min-width {
+        $dropdownmenu-min-width: $set-dropdownmenu-min-width !global;
+    }
+    @else {
+        $dropdownmenu-min-width: $-dropdownmenu-min-width !global;
+    }
+    @if $set-dropdownmenu-background {
+        $dropdownmenu-background: $set-dropdownmenu-background !global;
+    }
+    @else {
+        $dropdownmenu-background: $-dropdownmenu-background !global;
+    }
+    @if $set-dropdownmenu-submenu-background {
+        $dropdownmenu-submenu-background: $set-dropdownmenu-submenu-background !global;
+    }
+    @else {
+        $dropdownmenu-submenu-background: $-dropdownmenu-submenu-background !global;
+    }
+    @if $set-dropdownmenu-padding {
+        $dropdownmenu-padding: $set-dropdownmenu-padding !global;
+    }
+    @else {
+        $dropdownmenu-padding: $-dropdownmenu-padding !global;
+    }
+    @if $set-dropdownmenu-nested-margin {
+        $dropdownmenu-nested-margin: $set-dropdownmenu-nested-margin !global;
+    }
+    @else {
+        $dropdownmenu-nested-margin: $-dropdownmenu-nested-margin !global;
+    }
+    @if $set-dropdownmenu-submenu-padding {
+        $dropdownmenu-submenu-padding: $set-dropdownmenu-submenu-padding !global;
+    }
+    @else {
+        $dropdownmenu-submenu-padding: $-dropdownmenu-submenu-padding !global;
+    }
+    @if $set-dropdownmenu-border {
+        $dropdownmenu-border: $set-dropdownmenu-border !global;
+    }
+    @else {
+        $dropdownmenu-border: $-dropdownmenu-border !global;
+    }
+    @if $set-dropdown-menu-item-color-active {
+        $dropdown-menu-item-color-active: $set-dropdown-menu-item-color-active !global;
+    }
+    @else {
+        $dropdown-menu-item-color-active: $-dropdown-menu-item-color-active !global;
+    }
+    @if $set-dropdown-menu-item-background-active {
+        $dropdown-menu-item-background-active: $set-dropdown-menu-item-background-active !global;
+    }
+    @else {
+        $dropdown-menu-item-background-active: $-dropdown-menu-item-background-active !global;
+    }
+    @if $set-flex-source-ordering-count {
+        $flex-source-ordering-count: $set-flex-source-ordering-count !global;
+    }
+    @else {
+        $flex-source-ordering-count: $-flex-source-ordering-count !global;
+    }
+    @if $set-flexbox-responsive-breakpoints {
+        $flexbox-responsive-breakpoints: $set-flexbox-responsive-breakpoints !global;
+    }
+    @else {
+        $flexbox-responsive-breakpoints: $-flexbox-responsive-breakpoints !global;
+    }
+    @if $set-fieldset-border {
+        $fieldset-border: $set-fieldset-border !global;
+    }
+    @else {
+        $fieldset-border: $-fieldset-border !global;
+    }
+    @if $set-fieldset-padding {
+        $fieldset-padding: $set-fieldset-padding !global;
+    }
+    @else {
+        $fieldset-padding: $-fieldset-padding !global;
+    }
+    @if $set-fieldset-margin {
+        $fieldset-margin: $set-fieldset-margin !global;
+    }
+    @else {
+        $fieldset-margin: $-fieldset-margin !global;
+    }
+    @if $set-legend-padding {
+        $legend-padding: $set-legend-padding !global;
+    }
+    @else {
+        $legend-padding: $-legend-padding !global;
+    }
+    @if $set-form-spacing {
+        $form-spacing: $set-form-spacing !global;
+    }
+    @else {
+        $form-spacing: $-form-spacing !global;
+    }
+    @if $set-helptext-color {
+        $helptext-color: $set-helptext-color !global;
+    }
+    @else {
+        $helptext-color: $-helptext-color !global;
+    }
+    @if $set-helptext-font-size {
+        $helptext-font-size: $set-helptext-font-size !global;
+    }
+    @else {
+        $helptext-font-size: $-helptext-font-size !global;
+    }
+    @if $set-helptext-font-style {
+        $helptext-font-style: $set-helptext-font-style !global;
+    }
+    @else {
+        $helptext-font-style: $-helptext-font-style !global;
+    }
+    @if $set-input-prefix-color {
+        $input-prefix-color: $set-input-prefix-color !global;
+    }
+    @else {
+        $input-prefix-color: $-input-prefix-color !global;
+    }
+    @if $set-input-prefix-background {
+        $input-prefix-background: $set-input-prefix-background !global;
+    }
+    @else {
+        $input-prefix-background: $-input-prefix-background !global;
+    }
+    @if $set-input-prefix-border {
+        $input-prefix-border: $set-input-prefix-border !global;
+    }
+    @else {
+        $input-prefix-border: $-input-prefix-border !global;
+    }
+    @if $set-input-prefix-padding {
+        $input-prefix-padding: $set-input-prefix-padding !global;
+    }
+    @else {
+        $input-prefix-padding: $-input-prefix-padding !global;
+    }
+    @if $set-form-label-color {
+        $form-label-color: $set-form-label-color !global;
+    }
+    @else {
+        $form-label-color: $-form-label-color !global;
+    }
+    @if $set-form-label-font-size {
+        $form-label-font-size: $set-form-label-font-size !global;
+    }
+    @else {
+        $form-label-font-size: $-form-label-font-size !global;
+    }
+    @if $set-form-label-font-weight {
+        $form-label-font-weight: $set-form-label-font-weight !global;
+    }
+    @else {
+        $form-label-font-weight: $-form-label-font-weight !global;
+    }
+    @if $set-form-label-line-height {
+        $form-label-line-height: $set-form-label-line-height !global;
+    }
+    @else {
+        $form-label-line-height: $-form-label-line-height !global;
+    }
+    @if $set-select-background {
+        $select-background: $set-select-background !global;
+    }
+    @else {
+        $select-background: $-select-background !global;
+    }
+    @if $set-select-triangle-color {
+        $select-triangle-color: $set-select-triangle-color !global;
+    }
+    @else {
+        $select-triangle-color: $-select-triangle-color !global;
+    }
+    @if $set-select-radius {
+        $select-radius: $set-select-radius !global;
+    }
+    @else {
+        $select-radius: $-select-radius !global;
+    }
+    @if $set-input-color {
+        $input-color: $set-input-color !global;
+    }
+    @else {
+        $input-color: $-input-color !global;
+    }
+    @if $set-input-placeholder-color {
+        $input-placeholder-color: $set-input-placeholder-color !global;
+    }
+    @else {
+        $input-placeholder-color: $-input-placeholder-color !global;
+    }
+    @if $set-input-font-family {
+        $input-font-family: $set-input-font-family !global;
+    }
+    @else {
+        $input-font-family: $-input-font-family !global;
+    }
+    @if $set-input-font-size {
+        $input-font-size: $set-input-font-size !global;
+    }
+    @else {
+        $input-font-size: $-input-font-size !global;
+    }
+    @if $set-input-font-weight {
+        $input-font-weight: $set-input-font-weight !global;
+    }
+    @else {
+        $input-font-weight: $-input-font-weight !global;
+    }
+    @if $set-input-line-height {
+        $input-line-height: $set-input-line-height !global;
+    }
+    @else {
+        $input-line-height: $-input-line-height !global;
+    }
+    @if $set-input-background {
+        $input-background: $set-input-background !global;
+    }
+    @else {
+        $input-background: $-input-background !global;
+    }
+    @if $set-input-background-focus {
+        $input-background-focus: $set-input-background-focus !global;
+    }
+    @else {
+        $input-background-focus: $-input-background-focus !global;
+    }
+    @if $set-input-background-disabled {
+        $input-background-disabled: $set-input-background-disabled !global;
+    }
+    @else {
+        $input-background-disabled: $-input-background-disabled !global;
+    }
+    @if $set-input-border {
+        $input-border: $set-input-border !global;
+    }
+    @else {
+        $input-border: $-input-border !global;
+    }
+    @if $set-input-border-focus {
+        $input-border-focus: $set-input-border-focus !global;
+    }
+    @else {
+        $input-border-focus: $-input-border-focus !global;
+    }
+    @if $set-input-padding {
+        $input-padding: $set-input-padding !global;
+    }
+    @else {
+        $input-padding: $-input-padding !global;
+    }
+    @if $set-input-shadow {
+        $input-shadow: $set-input-shadow !global;
+    }
+    @else {
+        $input-shadow: $-input-shadow !global;
+    }
+    @if $set-input-shadow-focus {
+        $input-shadow-focus: $set-input-shadow-focus !global;
+    }
+    @else {
+        $input-shadow-focus: $-input-shadow-focus !global;
+    }
+    @if $set-input-cursor-disabled {
+        $input-cursor-disabled: $set-input-cursor-disabled !global;
+    }
+    @else {
+        $input-cursor-disabled: $-input-cursor-disabled !global;
+    }
+    @if $set-input-transition {
+        $input-transition: $set-input-transition !global;
+    }
+    @else {
+        $input-transition: $-input-transition !global;
+    }
+    @if $set-input-number-spinners {
+        $input-number-spinners: $set-input-number-spinners !global;
+    }
+    @else {
+        $input-number-spinners: $-input-number-spinners !global;
+    }
+    @if $set-input-radius {
+        $input-radius: $set-input-radius !global;
+    }
+    @else {
+        $input-radius: $-input-radius !global;
+    }
+    @if $set-form-button-radius {
+        $form-button-radius: $set-form-button-radius !global;
+    }
+    @else {
+        $form-button-radius: $-form-button-radius !global;
+    }
+    @if $set-label-background {
+        $label-background: $set-label-background !global;
+    }
+    @else {
+        $label-background: $-label-background !global;
+    }
+    @if $set-label-color {
+        $label-color: $set-label-color !global;
+    }
+    @else {
+        $label-color: $-label-color !global;
+    }
+    @if $set-label-color-alt {
+        $label-color-alt: $set-label-color-alt !global;
+    }
+    @else {
+        $label-color-alt: $-label-color-alt !global;
+    }
+    @if $set-label-palette {
+        $label-palette: $set-label-palette !global;
+    }
+    @else {
+        $label-palette: $-label-palette !global;
+    }
+    @if $set-label-font-size {
+        $label-font-size: $set-label-font-size !global;
+    }
+    @else {
+        $label-font-size: $-label-font-size !global;
+    }
+    @if $set-label-padding {
+        $label-padding: $set-label-padding !global;
+    }
+    @else {
+        $label-padding: $-label-padding !global;
+    }
+    @if $set-label-radius {
+        $label-radius: $set-label-radius !global;
+    }
+    @else {
+        $label-radius: $-label-radius !global;
+    }
+    @if $set-mediaobject-margin-bottom {
+        $mediaobject-margin-bottom: $set-mediaobject-margin-bottom !global;
+    }
+    @else {
+        $mediaobject-margin-bottom: $-mediaobject-margin-bottom !global;
+    }
+    @if $set-mediaobject-section-padding {
+        $mediaobject-section-padding: $set-mediaobject-section-padding !global;
+    }
+    @else {
+        $mediaobject-section-padding: $-mediaobject-section-padding !global;
+    }
+    @if $set-mediaobject-image-width-stacked {
+        $mediaobject-image-width-stacked: $set-mediaobject-image-width-stacked !global;
+    }
+    @else {
+        $mediaobject-image-width-stacked: $-mediaobject-image-width-stacked !global;
+    }
+    @if $set-menu-margin {
+        $menu-margin: $set-menu-margin !global;
+    }
+    @else {
+        $menu-margin: $-menu-margin !global;
+    }
+    @if $set-menu-nested-margin {
+        $menu-nested-margin: $set-menu-nested-margin !global;
+    }
+    @else {
+        $menu-nested-margin: $-menu-nested-margin !global;
+    }
+    @if $set-menu-items-padding {
+        $menu-items-padding: $set-menu-items-padding !global;
+    }
+    @else {
+        $menu-items-padding: $-menu-items-padding !global;
+    }
+    @if $set-menu-simple-margin {
+        $menu-simple-margin: $set-menu-simple-margin !global;
+    }
+    @else {
+        $menu-simple-margin: $-menu-simple-margin !global;
+    }
+    @if $set-menu-item-color-active {
+        $menu-item-color-active: $set-menu-item-color-active !global;
+    }
+    @else {
+        $menu-item-color-active: $-menu-item-color-active !global;
+    }
+    @if $set-menu-item-color-alt-active {
+        $menu-item-color-alt-active: $set-menu-item-color-alt-active !global;
+    }
+    @else {
+        $menu-item-color-alt-active: $-menu-item-color-alt-active !global;
+    }
+    @if $set-menu-item-background-active {
+        $menu-item-background-active: $set-menu-item-background-active !global;
+    }
+    @else {
+        $menu-item-background-active: $-menu-item-background-active !global;
+    }
+    @if $set-menu-icon-spacing {
+        $menu-icon-spacing: $set-menu-icon-spacing !global;
+    }
+    @else {
+        $menu-icon-spacing: $-menu-icon-spacing !global;
+    }
+    @if $set-menu-state-back-compat {
+        $menu-state-back-compat: $set-menu-state-back-compat !global;
+    }
+    @else {
+        $menu-state-back-compat: $-menu-state-back-compat !global;
+    }
+    @if $set-menu-centered-back-compat {
+        $menu-centered-back-compat: $set-menu-centered-back-compat !global;
+    }
+    @else {
+        $menu-centered-back-compat: $-menu-centered-back-compat !global;
+    }
+    @if $set-menu-icons-back-compat {
+        $menu-icons-back-compat: $set-menu-icons-back-compat !global;
+    }
+    @else {
+        $menu-icons-back-compat: $-menu-icons-back-compat !global;
+    }
+    @if $set-meter-height {
+        $meter-height: $set-meter-height !global;
+    }
+    @else {
+        $meter-height: $-meter-height !global;
+    }
+    @if $set-meter-radius {
+        $meter-radius: $set-meter-radius !global;
+    }
+    @else {
+        $meter-radius: $-meter-radius !global;
+    }
+    @if $set-meter-background {
+        $meter-background: $set-meter-background !global;
+    }
+    @else {
+        $meter-background: $-meter-background !global;
+    }
+    @if $set-meter-fill-good {
+        $meter-fill-good: $set-meter-fill-good !global;
+    }
+    @else {
+        $meter-fill-good: $-meter-fill-good !global;
+    }
+    @if $set-meter-fill-medium {
+        $meter-fill-medium: $set-meter-fill-medium !global;
+    }
+    @else {
+        $meter-fill-medium: $-meter-fill-medium !global;
+    }
+    @if $set-meter-fill-bad {
+        $meter-fill-bad: $set-meter-fill-bad !global;
+    }
+    @else {
+        $meter-fill-bad: $-meter-fill-bad !global;
+    }
+    @if $set-offcanvas-sizes {
+        $offcanvas-sizes: $set-offcanvas-sizes !global;
+    }
+    @else {
+        $offcanvas-sizes: $-offcanvas-sizes !global;
+    }
+    @if $set-offcanvas-vertical-sizes {
+        $offcanvas-vertical-sizes: $set-offcanvas-vertical-sizes !global;
+    }
+    @else {
+        $offcanvas-vertical-sizes: $-offcanvas-vertical-sizes !global;
+    }
+    @if $set-offcanvas-background {
+        $offcanvas-background: $set-offcanvas-background !global;
+    }
+    @else {
+        $offcanvas-background: $-offcanvas-background !global;
+    }
+    @if $set-offcanvas-shadow {
+        $offcanvas-shadow: $set-offcanvas-shadow !global;
+    }
+    @else {
+        $offcanvas-shadow: $-offcanvas-shadow !global;
+    }
+    @if $set-offcanvas-inner-shadow-size {
+        $offcanvas-inner-shadow-size: $set-offcanvas-inner-shadow-size !global;
+    }
+    @else {
+        $offcanvas-inner-shadow-size: $-offcanvas-inner-shadow-size !global;
+    }
+    @if $set-offcanvas-inner-shadow-color {
+        $offcanvas-inner-shadow-color: $set-offcanvas-inner-shadow-color !global;
+    }
+    @else {
+        $offcanvas-inner-shadow-color: $-offcanvas-inner-shadow-color !global;
+    }
+    @if $set-offcanvas-overlay-zindex {
+        $offcanvas-overlay-zindex: $set-offcanvas-overlay-zindex !global;
+    }
+    @else {
+        $offcanvas-overlay-zindex: $-offcanvas-overlay-zindex !global;
+    }
+    @if $set-offcanvas-push-zindex {
+        $offcanvas-push-zindex: $set-offcanvas-push-zindex !global;
+    }
+    @else {
+        $offcanvas-push-zindex: $-offcanvas-push-zindex !global;
+    }
+    @if $set-offcanvas-overlap-zindex {
+        $offcanvas-overlap-zindex: $set-offcanvas-overlap-zindex !global;
+    }
+    @else {
+        $offcanvas-overlap-zindex: $-offcanvas-overlap-zindex !global;
+    }
+    @if $set-offcanvas-reveal-zindex {
+        $offcanvas-reveal-zindex: $set-offcanvas-reveal-zindex !global;
+    }
+    @else {
+        $offcanvas-reveal-zindex: $-offcanvas-reveal-zindex !global;
+    }
+    @if $set-offcanvas-transition-length {
+        $offcanvas-transition-length: $set-offcanvas-transition-length !global;
+    }
+    @else {
+        $offcanvas-transition-length: $-offcanvas-transition-length !global;
+    }
+    @if $set-offcanvas-transition-timing {
+        $offcanvas-transition-timing: $set-offcanvas-transition-timing !global;
+    }
+    @else {
+        $offcanvas-transition-timing: $-offcanvas-transition-timing !global;
+    }
+    @if $set-offcanvas-fixed-reveal {
+        $offcanvas-fixed-reveal: $set-offcanvas-fixed-reveal !global;
+    }
+    @else {
+        $offcanvas-fixed-reveal: $-offcanvas-fixed-reveal !global;
+    }
+    @if $set-offcanvas-exit-background {
+        $offcanvas-exit-background: $set-offcanvas-exit-background !global;
+    }
+    @else {
+        $offcanvas-exit-background: $-offcanvas-exit-background !global;
+    }
+    @if $set-maincontent-class {
+        $maincontent-class: $set-maincontent-class !global;
+    }
+    @else {
+        $maincontent-class: $-maincontent-class !global;
+    }
+    @if $set-orbit-bullet-background {
+        $orbit-bullet-background: $set-orbit-bullet-background !global;
+    }
+    @else {
+        $orbit-bullet-background: $-orbit-bullet-background !global;
+    }
+    @if $set-orbit-bullet-background-active {
+        $orbit-bullet-background-active: $set-orbit-bullet-background-active !global;
+    }
+    @else {
+        $orbit-bullet-background-active: $-orbit-bullet-background-active !global;
+    }
+    @if $set-orbit-bullet-diameter {
+        $orbit-bullet-diameter: $set-orbit-bullet-diameter !global;
+    }
+    @else {
+        $orbit-bullet-diameter: $-orbit-bullet-diameter !global;
+    }
+    @if $set-orbit-bullet-margin {
+        $orbit-bullet-margin: $set-orbit-bullet-margin !global;
+    }
+    @else {
+        $orbit-bullet-margin: $-orbit-bullet-margin !global;
+    }
+    @if $set-orbit-bullet-margin-top {
+        $orbit-bullet-margin-top: $set-orbit-bullet-margin-top !global;
+    }
+    @else {
+        $orbit-bullet-margin-top: $-orbit-bullet-margin-top !global;
+    }
+    @if $set-orbit-bullet-margin-bottom {
+        $orbit-bullet-margin-bottom: $set-orbit-bullet-margin-bottom !global;
+    }
+    @else {
+        $orbit-bullet-margin-bottom: $-orbit-bullet-margin-bottom !global;
+    }
+    @if $set-orbit-caption-background {
+        $orbit-caption-background: $set-orbit-caption-background !global;
+    }
+    @else {
+        $orbit-caption-background: $-orbit-caption-background !global;
+    }
+    @if $set-orbit-caption-padding {
+        $orbit-caption-padding: $set-orbit-caption-padding !global;
+    }
+    @else {
+        $orbit-caption-padding: $-orbit-caption-padding !global;
+    }
+    @if $set-orbit-control-background-hover {
+        $orbit-control-background-hover: $set-orbit-control-background-hover !global;
+    }
+    @else {
+        $orbit-control-background-hover: $-orbit-control-background-hover !global;
+    }
+    @if $set-orbit-control-padding {
+        $orbit-control-padding: $set-orbit-control-padding !global;
+    }
+    @else {
+        $orbit-control-padding: $-orbit-control-padding !global;
+    }
+    @if $set-orbit-control-zindex {
+        $orbit-control-zindex: $set-orbit-control-zindex !global;
+    }
+    @else {
+        $orbit-control-zindex: $-orbit-control-zindex !global;
+    }
+    @if $set-pagination-font-size {
+        $pagination-font-size: $set-pagination-font-size !global;
+    }
+    @else {
+        $pagination-font-size: $-pagination-font-size !global;
+    }
+    @if $set-pagination-margin-bottom {
+        $pagination-margin-bottom: $set-pagination-margin-bottom !global;
+    }
+    @else {
+        $pagination-margin-bottom: $-pagination-margin-bottom !global;
+    }
+    @if $set-pagination-item-color {
+        $pagination-item-color: $set-pagination-item-color !global;
+    }
+    @else {
+        $pagination-item-color: $-pagination-item-color !global;
+    }
+    @if $set-pagination-item-padding {
+        $pagination-item-padding: $set-pagination-item-padding !global;
+    }
+    @else {
+        $pagination-item-padding: $-pagination-item-padding !global;
+    }
+    @if $set-pagination-item-spacing {
+        $pagination-item-spacing: $set-pagination-item-spacing !global;
+    }
+    @else {
+        $pagination-item-spacing: $-pagination-item-spacing !global;
+    }
+    @if $set-pagination-radius {
+        $pagination-radius: $set-pagination-radius !global;
+    }
+    @else {
+        $pagination-radius: $-pagination-radius !global;
+    }
+    @if $set-pagination-item-background-hover {
+        $pagination-item-background-hover: $set-pagination-item-background-hover !global;
+    }
+    @else {
+        $pagination-item-background-hover: $-pagination-item-background-hover !global;
+    }
+    @if $set-pagination-item-background-current {
+        $pagination-item-background-current: $set-pagination-item-background-current !global;
+    }
+    @else {
+        $pagination-item-background-current: $-pagination-item-background-current !global;
+    }
+    @if $set-pagination-item-color-current {
+        $pagination-item-color-current: $set-pagination-item-color-current !global;
+    }
+    @else {
+        $pagination-item-color-current: $-pagination-item-color-current !global;
+    }
+    @if $set-pagination-item-color-disabled {
+        $pagination-item-color-disabled: $set-pagination-item-color-disabled !global;
+    }
+    @else {
+        $pagination-item-color-disabled: $-pagination-item-color-disabled !global;
+    }
+    @if $set-pagination-ellipsis-color {
+        $pagination-ellipsis-color: $set-pagination-ellipsis-color !global;
+    }
+    @else {
+        $pagination-ellipsis-color: $-pagination-ellipsis-color !global;
+    }
+    @if $set-pagination-mobile-items {
+        $pagination-mobile-items: $set-pagination-mobile-items !global;
+    }
+    @else {
+        $pagination-mobile-items: $-pagination-mobile-items !global;
+    }
+    @if $set-pagination-mobile-current-item {
+        $pagination-mobile-current-item: $set-pagination-mobile-current-item !global;
+    }
+    @else {
+        $pagination-mobile-current-item: $-pagination-mobile-current-item !global;
+    }
+    @if $set-pagination-arrows {
+        $pagination-arrows: $set-pagination-arrows !global;
+    }
+    @else {
+        $pagination-arrows: $-pagination-arrows !global;
+    }
+    @if $set-pagination-arrow-previous {
+        $pagination-arrow-previous: $set-pagination-arrow-previous !global;
+    }
+    @else {
+        $pagination-arrow-previous: $-pagination-arrow-previous !global;
+    }
+    @if $set-pagination-arrow-next {
+        $pagination-arrow-next: $set-pagination-arrow-next !global;
+    }
+    @else {
+        $pagination-arrow-next: $-pagination-arrow-next !global;
+    }
+    @if $set-progress-height {
+        $progress-height: $set-progress-height !global;
+    }
+    @else {
+        $progress-height: $-progress-height !global;
+    }
+    @if $set-progress-background {
+        $progress-background: $set-progress-background !global;
+    }
+    @else {
+        $progress-background: $-progress-background !global;
+    }
+    @if $set-progress-margin-bottom {
+        $progress-margin-bottom: $set-progress-margin-bottom !global;
+    }
+    @else {
+        $progress-margin-bottom: $-progress-margin-bottom !global;
+    }
+    @if $set-progress-meter-background {
+        $progress-meter-background: $set-progress-meter-background !global;
+    }
+    @else {
+        $progress-meter-background: $-progress-meter-background !global;
+    }
+    @if $set-progress-radius {
+        $progress-radius: $set-progress-radius !global;
+    }
+    @else {
+        $progress-radius: $-progress-radius !global;
+    }
+    @if $set-prototype-arrow-directions {
+        $prototype-arrow-directions: $set-prototype-arrow-directions !global;
+    }
+    @else {
+        $prototype-arrow-directions: $-prototype-arrow-directions !global;
+    }
+    @if $set-prototype-arrow-size {
+        $prototype-arrow-size: $set-prototype-arrow-size !global;
+    }
+    @else {
+        $prototype-arrow-size: $-prototype-arrow-size !global;
+    }
+    @if $set-prototype-arrow-color {
+        $prototype-arrow-color: $set-prototype-arrow-color !global;
+    }
+    @else {
+        $prototype-arrow-color: $-prototype-arrow-color !global;
+    }
+    @if $set-prototype-border-box-breakpoints {
+        $prototype-border-box-breakpoints: $set-prototype-border-box-breakpoints !global;
+    }
+    @else {
+        $prototype-border-box-breakpoints: $-prototype-border-box-breakpoints !global;
+    }
+    @if $set-prototype-border-none-breakpoints {
+        $prototype-border-none-breakpoints: $set-prototype-border-none-breakpoints !global;
+    }
+    @else {
+        $prototype-border-none-breakpoints: $-prototype-border-none-breakpoints !global;
+    }
+    @if $set-prototype-bordered-breakpoints {
+        $prototype-bordered-breakpoints: $set-prototype-bordered-breakpoints !global;
+    }
+    @else {
+        $prototype-bordered-breakpoints: $-prototype-bordered-breakpoints !global;
+    }
+    @if $set-prototype-border-width {
+        $prototype-border-width: $set-prototype-border-width !global;
+    }
+    @else {
+        $prototype-border-width: $-prototype-border-width !global;
+    }
+    @if $set-prototype-border-type {
+        $prototype-border-type: $set-prototype-border-type !global;
+    }
+    @else {
+        $prototype-border-type: $-prototype-border-type !global;
+    }
+    @if $set-prototype-border-color {
+        $prototype-border-color: $set-prototype-border-color !global;
+    }
+    @else {
+        $prototype-border-color: $-prototype-border-color !global;
+    }
+    @if $set-prototype-display-breakpoints {
+        $prototype-display-breakpoints: $set-prototype-display-breakpoints !global;
+    }
+    @else {
+        $prototype-display-breakpoints: $-prototype-display-breakpoints !global;
+    }
+    @if $set-prototype-display {
+        $prototype-display: $set-prototype-display !global;
+    }
+    @else {
+        $prototype-display: $-prototype-display !global;
+    }
+    @if $set-prototype-font-breakpoints {
+        $prototype-font-breakpoints: $set-prototype-font-breakpoints !global;
+    }
+    @else {
+        $prototype-font-breakpoints: $-prototype-font-breakpoints !global;
+    }
+    @if $set-prototype-wide-letter-spacing {
+        $prototype-wide-letter-spacing: $set-prototype-wide-letter-spacing !global;
+    }
+    @else {
+        $prototype-wide-letter-spacing: $-prototype-wide-letter-spacing !global;
+    }
+    @if $set-prototype-font-normal {
+        $prototype-font-normal: $set-prototype-font-normal !global;
+    }
+    @else {
+        $prototype-font-normal: $-prototype-font-normal !global;
+    }
+    @if $set-prototype-font-bold {
+        $prototype-font-bold: $set-prototype-font-bold !global;
+    }
+    @else {
+        $prototype-font-bold: $-prototype-font-bold !global;
+    }
+    @if $set-prototype-list-breakpoints {
+        $prototype-list-breakpoints: $set-prototype-list-breakpoints !global;
+    }
+    @else {
+        $prototype-list-breakpoints: $-prototype-list-breakpoints !global;
+    }
+    @if $set-prototype-style-type-unordered {
+        $prototype-style-type-unordered: $set-prototype-style-type-unordered !global;
+    }
+    @else {
+        $prototype-style-type-unordered: $-prototype-style-type-unordered !global;
+    }
+    @if $set-prototype-style-type-ordered {
+        $prototype-style-type-ordered: $set-prototype-style-type-ordered !global;
+    }
+    @else {
+        $prototype-style-type-ordered: $-prototype-style-type-ordered !global;
+    }
+    @if $set-prototype-overflow-breakpoints {
+        $prototype-overflow-breakpoints: $set-prototype-overflow-breakpoints !global;
+    }
+    @else {
+        $prototype-overflow-breakpoints: $-prototype-overflow-breakpoints !global;
+    }
+    @if $set-prototype-overflow {
+        $prototype-overflow: $set-prototype-overflow !global;
+    }
+    @else {
+        $prototype-overflow: $-prototype-overflow !global;
+    }
+    @if $set-prototype-position-breakpoints {
+        $prototype-position-breakpoints: $set-prototype-position-breakpoints !global;
+    }
+    @else {
+        $prototype-position-breakpoints: $-prototype-position-breakpoints !global;
+    }
+    @if $set-prototype-position {
+        $prototype-position: $set-prototype-position !global;
+    }
+    @else {
+        $prototype-position: $-prototype-position !global;
+    }
+    @if $set-prototype-position-z-index {
+        $prototype-position-z-index: $set-prototype-position-z-index !global;
+    }
+    @else {
+        $prototype-position-z-index: $-prototype-position-z-index !global;
+    }
+    @if $set-prototype-rounded-breakpoints {
+        $prototype-rounded-breakpoints: $set-prototype-rounded-breakpoints !global;
+    }
+    @else {
+        $prototype-rounded-breakpoints: $-prototype-rounded-breakpoints !global;
+    }
+    @if $set-prototype-border-radius {
+        $prototype-border-radius: $set-prototype-border-radius !global;
+    }
+    @else {
+        $prototype-border-radius: $-prototype-border-radius !global;
+    }
+    @if $set-prototype-separator-breakpoints {
+        $prototype-separator-breakpoints: $set-prototype-separator-breakpoints !global;
+    }
+    @else {
+        $prototype-separator-breakpoints: $-prototype-separator-breakpoints !global;
+    }
+    @if $set-prototype-separator-align {
+        $prototype-separator-align: $set-prototype-separator-align !global;
+    }
+    @else {
+        $prototype-separator-align: $-prototype-separator-align !global;
+    }
+    @if $set-prototype-separator-height {
+        $prototype-separator-height: $set-prototype-separator-height !global;
+    }
+    @else {
+        $prototype-separator-height: $-prototype-separator-height !global;
+    }
+    @if $set-prototype-separator-width {
+        $prototype-separator-width: $set-prototype-separator-width !global;
+    }
+    @else {
+        $prototype-separator-width: $-prototype-separator-width !global;
+    }
+    @if $set-prototype-separator-background {
+        $prototype-separator-background: $set-prototype-separator-background !global;
+    }
+    @else {
+        $prototype-separator-background: $-prototype-separator-background !global;
+    }
+    @if $set-prototype-separator-margin-top {
+        $prototype-separator-margin-top: $set-prototype-separator-margin-top !global;
+    }
+    @else {
+        $prototype-separator-margin-top: $-prototype-separator-margin-top !global;
+    }
+    @if $set-prototype-shadow-breakpoints {
+        $prototype-shadow-breakpoints: $set-prototype-shadow-breakpoints !global;
+    }
+    @else {
+        $prototype-shadow-breakpoints: $-prototype-shadow-breakpoints !global;
+    }
+    @if $set-prototype-box-shadow {
+        $prototype-box-shadow: $set-prototype-box-shadow !global;
+    }
+    @else {
+        $prototype-box-shadow: $-prototype-box-shadow !global;
+    }
+    @if $set-prototype-sizing-breakpoints {
+        $prototype-sizing-breakpoints: $set-prototype-sizing-breakpoints !global;
+    }
+    @else {
+        $prototype-sizing-breakpoints: $-prototype-sizing-breakpoints !global;
+    }
+    @if $set-prototype-sizing {
+        $prototype-sizing: $set-prototype-sizing !global;
+    }
+    @else {
+        $prototype-sizing: $-prototype-sizing !global;
+    }
+    @if $set-prototype-sizes {
+        $prototype-sizes: $set-prototype-sizes !global;
+    }
+    @else {
+        $prototype-sizes: $-prototype-sizes !global;
+    }
+    @if $set-prototype-spacing-breakpoints {
+        $prototype-spacing-breakpoints: $set-prototype-spacing-breakpoints !global;
+    }
+    @else {
+        $prototype-spacing-breakpoints: $-prototype-spacing-breakpoints !global;
+    }
+    @if $set-prototype-spacers-count {
+        $prototype-spacers-count: $set-prototype-spacers-count !global;
+    }
+    @else {
+        $prototype-spacers-count: $-prototype-spacers-count !global;
+    }
+    @if $set-prototype-decoration-breakpoints {
+        $prototype-decoration-breakpoints: $set-prototype-decoration-breakpoints !global;
+    }
+    @else {
+        $prototype-decoration-breakpoints: $-prototype-decoration-breakpoints !global;
+    }
+    @if $set-prototype-text-decoration {
+        $prototype-text-decoration: $set-prototype-text-decoration !global;
+    }
+    @else {
+        $prototype-text-decoration: $-prototype-text-decoration !global;
+    }
+    @if $set-prototype-transformation-breakpoints {
+        $prototype-transformation-breakpoints: $set-prototype-transformation-breakpoints !global;
+    }
+    @else {
+        $prototype-transformation-breakpoints: $-prototype-transformation-breakpoints !global;
+    }
+    @if $set-prototype-text-transformation {
+        $prototype-text-transformation: $set-prototype-text-transformation !global;
+    }
+    @else {
+        $prototype-text-transformation: $-prototype-text-transformation !global;
+    }
+    @if $set-prototype-utilities-breakpoints {
+        $prototype-utilities-breakpoints: $set-prototype-utilities-breakpoints !global;
+    }
+    @else {
+        $prototype-utilities-breakpoints: $-prototype-utilities-breakpoints !global;
+    }
+    @if $set-prototype-text-overflow {
+        $prototype-text-overflow: $set-prototype-text-overflow !global;
+    }
+    @else {
+        $prototype-text-overflow: $-prototype-text-overflow !global;
+    }
+    @if $set-responsive-embed-margin-bottom {
+        $responsive-embed-margin-bottom: $set-responsive-embed-margin-bottom !global;
+    }
+    @else {
+        $responsive-embed-margin-bottom: $-responsive-embed-margin-bottom !global;
+    }
+    @if $set-responsive-embed-ratios {
+        $responsive-embed-ratios: $set-responsive-embed-ratios !global;
+    }
+    @else {
+        $responsive-embed-ratios: $-responsive-embed-ratios !global;
+    }
+    @if $set-reveal-background {
+        $reveal-background: $set-reveal-background !global;
+    }
+    @else {
+        $reveal-background: $-reveal-background !global;
+    }
+    @if $set-reveal-width {
+        $reveal-width: $set-reveal-width !global;
+    }
+    @else {
+        $reveal-width: $-reveal-width !global;
+    }
+    @if $set-reveal-max-width {
+        $reveal-max-width: $set-reveal-max-width !global;
+    }
+    @else {
+        $reveal-max-width: $-reveal-max-width !global;
+    }
+    @if $set-reveal-padding {
+        $reveal-padding: $set-reveal-padding !global;
+    }
+    @else {
+        $reveal-padding: $-reveal-padding !global;
+    }
+    @if $set-reveal-border {
+        $reveal-border: $set-reveal-border !global;
+    }
+    @else {
+        $reveal-border: $-reveal-border !global;
+    }
+    @if $set-reveal-radius {
+        $reveal-radius: $set-reveal-radius !global;
+    }
+    @else {
+        $reveal-radius: $-reveal-radius !global;
+    }
+    @if $set-reveal-zindex {
+        $reveal-zindex: $set-reveal-zindex !global;
+    }
+    @else {
+        $reveal-zindex: $-reveal-zindex !global;
+    }
+    @if $set-reveal-overlay-background {
+        $reveal-overlay-background: $set-reveal-overlay-background !global;
+    }
+    @else {
+        $reveal-overlay-background: $-reveal-overlay-background !global;
+    }
+    @if $set-slider-width-vertical {
+        $slider-width-vertical: $set-slider-width-vertical !global;
+    }
+    @else {
+        $slider-width-vertical: $-slider-width-vertical !global;
+    }
+    @if $set-slider-transition {
+        $slider-transition: $set-slider-transition !global;
+    }
+    @else {
+        $slider-transition: $-slider-transition !global;
+    }
+    @if $set-slider-height {
+        $slider-height: $set-slider-height !global;
+    }
+    @else {
+        $slider-height: $-slider-height !global;
+    }
+    @if $set-slider-background {
+        $slider-background: $set-slider-background !global;
+    }
+    @else {
+        $slider-background: $-slider-background !global;
+    }
+    @if $set-slider-fill-background {
+        $slider-fill-background: $set-slider-fill-background !global;
+    }
+    @else {
+        $slider-fill-background: $-slider-fill-background !global;
+    }
+    @if $set-slider-handle-height {
+        $slider-handle-height: $set-slider-handle-height !global;
+    }
+    @else {
+        $slider-handle-height: $-slider-handle-height !global;
+    }
+    @if $set-slider-handle-width {
+        $slider-handle-width: $set-slider-handle-width !global;
+    }
+    @else {
+        $slider-handle-width: $-slider-handle-width !global;
+    }
+    @if $set-slider-handle-background {
+        $slider-handle-background: $set-slider-handle-background !global;
+    }
+    @else {
+        $slider-handle-background: $-slider-handle-background !global;
+    }
+    @if $set-slider-opacity-disabled {
+        $slider-opacity-disabled: $set-slider-opacity-disabled !global;
+    }
+    @else {
+        $slider-opacity-disabled: $-slider-opacity-disabled !global;
+    }
+    @if $set-slider-radius {
+        $slider-radius: $set-slider-radius !global;
+    }
+    @else {
+        $slider-radius: $-slider-radius !global;
+    }
+    @if $set-switch-background {
+        $switch-background: $set-switch-background !global;
+    }
+    @else {
+        $switch-background: $-switch-background !global;
+    }
+    @if $set-switch-background-active {
+        $switch-background-active: $set-switch-background-active !global;
+    }
+    @else {
+        $switch-background-active: $-switch-background-active !global;
+    }
+    @if $set-switch-height {
+        $switch-height: $set-switch-height !global;
+    }
+    @else {
+        $switch-height: $-switch-height !global;
+    }
+    @if $set-switch-height-tiny {
+        $switch-height-tiny: $set-switch-height-tiny !global;
+    }
+    @else {
+        $switch-height-tiny: $-switch-height-tiny !global;
+    }
+    @if $set-switch-height-small {
+        $switch-height-small: $set-switch-height-small !global;
+    }
+    @else {
+        $switch-height-small: $-switch-height-small !global;
+    }
+    @if $set-switch-height-large {
+        $switch-height-large: $set-switch-height-large !global;
+    }
+    @else {
+        $switch-height-large: $-switch-height-large !global;
+    }
+    @if $set-switch-radius {
+        $switch-radius: $set-switch-radius !global;
+    }
+    @else {
+        $switch-radius: $-switch-radius !global;
+    }
+    @if $set-switch-margin {
+        $switch-margin: $set-switch-margin !global;
+    }
+    @else {
+        $switch-margin: $-switch-margin !global;
+    }
+    @if $set-switch-paddle-background {
+        $switch-paddle-background: $set-switch-paddle-background !global;
+    }
+    @else {
+        $switch-paddle-background: $-switch-paddle-background !global;
+    }
+    @if $set-switch-paddle-offset {
+        $switch-paddle-offset: $set-switch-paddle-offset !global;
+    }
+    @else {
+        $switch-paddle-offset: $-switch-paddle-offset !global;
+    }
+    @if $set-switch-paddle-radius {
+        $switch-paddle-radius: $set-switch-paddle-radius !global;
+    }
+    @else {
+        $switch-paddle-radius: $-switch-paddle-radius !global;
+    }
+    @if $set-switch-paddle-transition {
+        $switch-paddle-transition: $set-switch-paddle-transition !global;
+    }
+    @else {
+        $switch-paddle-transition: $-switch-paddle-transition !global;
+    }
+    @if $set-switch-opacity-disabled {
+        $switch-opacity-disabled: $set-switch-opacity-disabled !global;
+    }
+    @else {
+        $switch-opacity-disabled: $-switch-opacity-disabled !global;
+    }
+    @if $set-switch-cursor-disabled {
+        $switch-cursor-disabled: $set-switch-cursor-disabled !global;
+    }
+    @else {
+        $switch-cursor-disabled: $-switch-cursor-disabled !global;
+    }
+    @if $set-table-background {
+        $table-background: $set-table-background !global;
+    }
+    @else {
+        $table-background: $-table-background !global;
+    }
+    @if $set-table-color-scale {
+        $table-color-scale: $set-table-color-scale !global;
+    }
+    @else {
+        $table-color-scale: $-table-color-scale !global;
+    }
+    @if $set-table-border {
+        $table-border: $set-table-border !global;
+    }
+    @else {
+        $table-border: $-table-border !global;
+    }
+    @if $set-table-padding {
+        $table-padding: $set-table-padding !global;
+    }
+    @else {
+        $table-padding: $-table-padding !global;
+    }
+    @if $set-table-hover-scale {
+        $table-hover-scale: $set-table-hover-scale !global;
+    }
+    @else {
+        $table-hover-scale: $-table-hover-scale !global;
+    }
+    @if $set-table-row-hover {
+        $table-row-hover: $set-table-row-hover !global;
+    }
+    @else {
+        $table-row-hover: $-table-row-hover !global;
+    }
+    @if $set-table-row-stripe-hover {
+        $table-row-stripe-hover: $set-table-row-stripe-hover !global;
+    }
+    @else {
+        $table-row-stripe-hover: $-table-row-stripe-hover !global;
+    }
+    @if $set-table-is-striped {
+        $table-is-striped: $set-table-is-striped !global;
+    }
+    @else {
+        $table-is-striped: $-table-is-striped !global;
+    }
+    @if $set-table-striped-background {
+        $table-striped-background: $set-table-striped-background !global;
+    }
+    @else {
+        $table-striped-background: $-table-striped-background !global;
+    }
+    @if $set-table-stripe {
+        $table-stripe: $set-table-stripe !global;
+    }
+    @else {
+        $table-stripe: $-table-stripe !global;
+    }
+    @if $set-table-head-background {
+        $table-head-background: $set-table-head-background !global;
+    }
+    @else {
+        $table-head-background: $-table-head-background !global;
+    }
+    @if $set-table-head-row-hover {
+        $table-head-row-hover: $set-table-head-row-hover !global;
+    }
+    @else {
+        $table-head-row-hover: $-table-head-row-hover !global;
+    }
+    @if $set-table-foot-background {
+        $table-foot-background: $set-table-foot-background !global;
+    }
+    @else {
+        $table-foot-background: $-table-foot-background !global;
+    }
+    @if $set-table-foot-row-hover {
+        $table-foot-row-hover: $set-table-foot-row-hover !global;
+    }
+    @else {
+        $table-foot-row-hover: $-table-foot-row-hover !global;
+    }
+    @if $set-table-head-font-color {
+        $table-head-font-color: $set-table-head-font-color !global;
+    }
+    @else {
+        $table-head-font-color: $-table-head-font-color !global;
+    }
+    @if $set-table-foot-font-color {
+        $table-foot-font-color: $set-table-foot-font-color !global;
+    }
+    @else {
+        $table-foot-font-color: $-table-foot-font-color !global;
+    }
+    @if $set-show-header-for-stacked {
+        $show-header-for-stacked: $set-show-header-for-stacked !global;
+    }
+    @else {
+        $show-header-for-stacked: $-show-header-for-stacked !global;
+    }
+    @if $set-table-stack-breakpoint {
+        $table-stack-breakpoint: $set-table-stack-breakpoint !global;
+    }
+    @else {
+        $table-stack-breakpoint: $-table-stack-breakpoint !global;
+    }
+    @if $set-tab-margin {
+        $tab-margin: $set-tab-margin !global;
+    }
+    @else {
+        $tab-margin: $-tab-margin !global;
+    }
+    @if $set-tab-background {
+        $tab-background: $set-tab-background !global;
+    }
+    @else {
+        $tab-background: $-tab-background !global;
+    }
+    @if $set-tab-color {
+        $tab-color: $set-tab-color !global;
+    }
+    @else {
+        $tab-color: $-tab-color !global;
+    }
+    @if $set-tab-background-active {
+        $tab-background-active: $set-tab-background-active !global;
+    }
+    @else {
+        $tab-background-active: $-tab-background-active !global;
+    }
+    @if $set-tab-active-color {
+        $tab-active-color: $set-tab-active-color !global;
+    }
+    @else {
+        $tab-active-color: $-tab-active-color !global;
+    }
+    @if $set-tab-item-font-size {
+        $tab-item-font-size: $set-tab-item-font-size !global;
+    }
+    @else {
+        $tab-item-font-size: $-tab-item-font-size !global;
+    }
+    @if $set-tab-item-background-hover {
+        $tab-item-background-hover: $set-tab-item-background-hover !global;
+    }
+    @else {
+        $tab-item-background-hover: $-tab-item-background-hover !global;
+    }
+    @if $set-tab-item-padding {
+        $tab-item-padding: $set-tab-item-padding !global;
+    }
+    @else {
+        $tab-item-padding: $-tab-item-padding !global;
+    }
+    @if $set-tab-content-background {
+        $tab-content-background: $set-tab-content-background !global;
+    }
+    @else {
+        $tab-content-background: $-tab-content-background !global;
+    }
+    @if $set-tab-content-border {
+        $tab-content-border: $set-tab-content-border !global;
+    }
+    @else {
+        $tab-content-border: $-tab-content-border !global;
+    }
+    @if $set-tab-content-color {
+        $tab-content-color: $set-tab-content-color !global;
+    }
+    @else {
+        $tab-content-color: $-tab-content-color !global;
+    }
+    @if $set-tab-content-padding {
+        $tab-content-padding: $set-tab-content-padding !global;
+    }
+    @else {
+        $tab-content-padding: $-tab-content-padding !global;
+    }
+    @if $set-thumbnail-border {
+        $thumbnail-border: $set-thumbnail-border !global;
+    }
+    @else {
+        $thumbnail-border: $-thumbnail-border !global;
+    }
+    @if $set-thumbnail-margin-bottom {
+        $thumbnail-margin-bottom: $set-thumbnail-margin-bottom !global;
+    }
+    @else {
+        $thumbnail-margin-bottom: $-thumbnail-margin-bottom !global;
+    }
+    @if $set-thumbnail-shadow {
+        $thumbnail-shadow: $set-thumbnail-shadow !global;
+    }
+    @else {
+        $thumbnail-shadow: $-thumbnail-shadow !global;
+    }
+    @if $set-thumbnail-shadow-hover {
+        $thumbnail-shadow-hover: $set-thumbnail-shadow-hover !global;
+    }
+    @else {
+        $thumbnail-shadow-hover: $-thumbnail-shadow-hover !global;
+    }
+    @if $set-thumbnail-transition {
+        $thumbnail-transition: $set-thumbnail-transition !global;
+    }
+    @else {
+        $thumbnail-transition: $-thumbnail-transition !global;
+    }
+    @if $set-thumbnail-radius {
+        $thumbnail-radius: $set-thumbnail-radius !global;
+    }
+    @else {
+        $thumbnail-radius: $-thumbnail-radius !global;
+    }
+    @if $set-titlebar-background {
+        $titlebar-background: $set-titlebar-background !global;
+    }
+    @else {
+        $titlebar-background: $-titlebar-background !global;
+    }
+    @if $set-titlebar-color {
+        $titlebar-color: $set-titlebar-color !global;
+    }
+    @else {
+        $titlebar-color: $-titlebar-color !global;
+    }
+    @if $set-titlebar-padding {
+        $titlebar-padding: $set-titlebar-padding !global;
+    }
+    @else {
+        $titlebar-padding: $-titlebar-padding !global;
+    }
+    @if $set-titlebar-text-font-weight {
+        $titlebar-text-font-weight: $set-titlebar-text-font-weight !global;
+    }
+    @else {
+        $titlebar-text-font-weight: $-titlebar-text-font-weight !global;
+    }
+    @if $set-titlebar-icon-color {
+        $titlebar-icon-color: $set-titlebar-icon-color !global;
+    }
+    @else {
+        $titlebar-icon-color: $-titlebar-icon-color !global;
+    }
+    @if $set-titlebar-icon-color-hover {
+        $titlebar-icon-color-hover: $set-titlebar-icon-color-hover !global;
+    }
+    @else {
+        $titlebar-icon-color-hover: $-titlebar-icon-color-hover !global;
+    }
+    @if $set-titlebar-icon-spacing {
+        $titlebar-icon-spacing: $set-titlebar-icon-spacing !global;
+    }
+    @else {
+        $titlebar-icon-spacing: $-titlebar-icon-spacing !global;
+    }
+    @if $set-has-tip-cursor {
+        $has-tip-cursor: $set-has-tip-cursor !global;
+    }
+    @else {
+        $has-tip-cursor: $-has-tip-cursor !global;
+    }
+    @if $set-has-tip-font-weight {
+        $has-tip-font-weight: $set-has-tip-font-weight !global;
+    }
+    @else {
+        $has-tip-font-weight: $-has-tip-font-weight !global;
+    }
+    @if $set-has-tip-border-bottom {
+        $has-tip-border-bottom: $set-has-tip-border-bottom !global;
+    }
+    @else {
+        $has-tip-border-bottom: $-has-tip-border-bottom !global;
+    }
+    @if $set-tooltip-background-color {
+        $tooltip-background-color: $set-tooltip-background-color !global;
+    }
+    @else {
+        $tooltip-background-color: $-tooltip-background-color !global;
+    }
+    @if $set-tooltip-color {
+        $tooltip-color: $set-tooltip-color !global;
+    }
+    @else {
+        $tooltip-color: $-tooltip-color !global;
+    }
+    @if $set-tooltip-padding {
+        $tooltip-padding: $set-tooltip-padding !global;
+    }
+    @else {
+        $tooltip-padding: $-tooltip-padding !global;
+    }
+    @if $set-tooltip-max-width {
+        $tooltip-max-width: $set-tooltip-max-width !global;
+    }
+    @else {
+        $tooltip-max-width: $-tooltip-max-width !global;
+    }
+    @if $set-tooltip-font-size {
+        $tooltip-font-size: $set-tooltip-font-size !global;
+    }
+    @else {
+        $tooltip-font-size: $-tooltip-font-size !global;
+    }
+    @if $set-tooltip-pip-width {
+        $tooltip-pip-width: $set-tooltip-pip-width !global;
+    }
+    @else {
+        $tooltip-pip-width: $-tooltip-pip-width !global;
+    }
+    @if $set-tooltip-pip-height {
+        $tooltip-pip-height: $set-tooltip-pip-height !global;
+    }
+    @else {
+        $tooltip-pip-height: $-tooltip-pip-height !global;
+    }
+    @if $set-tooltip-radius {
+        $tooltip-radius: $set-tooltip-radius !global;
+    }
+    @else {
+        $tooltip-radius: $-tooltip-radius !global;
+    }
+    @if $set-topbar-padding {
+        $topbar-padding: $set-topbar-padding !global;
+    }
+    @else {
+        $topbar-padding: $-topbar-padding !global;
+    }
+    @if $set-topbar-background {
+        $topbar-background: $set-topbar-background !global;
+    }
+    @else {
+        $topbar-background: $-topbar-background !global;
+    }
+    @if $set-topbar-submenu-background {
+        $topbar-submenu-background: $set-topbar-submenu-background !global;
+    }
+    @else {
+        $topbar-submenu-background: $-topbar-submenu-background !global;
+    }
+    @if $set-topbar-title-spacing {
+        $topbar-title-spacing: $set-topbar-title-spacing !global;
+    }
+    @else {
+        $topbar-title-spacing: $-topbar-title-spacing !global;
+    }
+    @if $set-topbar-input-width {
+        $topbar-input-width: $set-topbar-input-width !global;
+    }
+    @else {
+        $topbar-input-width: $-topbar-input-width !global;
+    }
+    @if $set-topbar-unstack-breakpoint {
+        $topbar-unstack-breakpoint: $set-topbar-unstack-breakpoint !global;
+    }
+    @else {
+        $topbar-unstack-breakpoint: $-topbar-unstack-breakpoint !global;
+    }
+    @if $set-xy-grid {
+        $xy-grid: $set-xy-grid !global;
+    }
+    @else {
+        $xy-grid: $-xy-grid !global;
+    }
+    @if $set-grid-container {
+        $grid-container: $set-grid-container !global;
+    }
+    @else {
+        $grid-container: $-grid-container !global;
+    }
+    @if $set-grid-columns {
+        $grid-columns: $set-grid-columns !global;
+    }
+    @else {
+        $grid-columns: $-grid-columns !global;
+    }
+    @if $set-grid-margin-gutters {
+        $grid-margin-gutters: $set-grid-margin-gutters !global;
+    }
+    @else {
+        $grid-margin-gutters: $-grid-margin-gutters !global;
+    }
+    @if $set-grid-padding-gutters {
+        $grid-padding-gutters: $set-grid-padding-gutters !global;
+    }
+    @else {
+        $grid-padding-gutters: $-grid-padding-gutters !global;
+    }
+    @if $set-grid-container-padding {
+        $grid-container-padding: $set-grid-container-padding !global;
+    }
+    @else {
+        $grid-container-padding: $-grid-container-padding !global;
+    }
+    @if $set-grid-container-max {
+        $grid-container-max: $set-grid-container-max !global;
+    }
+    @else {
+        $grid-container-max: $-grid-container-max !global;
+    }
+    @if $set-xy-block-grid-max {
+        $xy-block-grid-max: $set-xy-block-grid-max !global;
+    }
+    @else {
+        $xy-block-grid-max: $-xy-block-grid-max !global;
+    }
+}
 
-$xy-grid: true;
-$grid-container: $global-width;
-$grid-columns: 12;
-$grid-margin-gutters: (
-  small: 20px,
-  medium: 30px
-);
-$grid-padding-gutters: $grid-margin-gutters;
-$grid-container-padding: $grid-padding-gutters;
-$grid-container-max: $global-width;
-$xy-block-grid-max: 8;
-
+// #endregion
