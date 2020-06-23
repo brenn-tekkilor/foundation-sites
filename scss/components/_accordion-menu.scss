@@ -2,69 +2,24 @@
 @use "../util/color";
 @use "../util/mixins";
 @use "menu";
-
+@use "../settings/settings";
 ////
 /// @group accordion-menu
 ////
 
-/// Sets accordion menu padding.
-/// @type Number
-$accordionmenu-padding: global.$global-menu-padding !default;
 
-/// Sets accordion menu nested margin
-/// @type Number
-$accordionmenu-nested-margin: global.$global-menu-nested-margin !default;
-
-/// Sets accordion menu submenu padding.
-/// @type Number
-$accordionmenu-submenu-padding: $accordionmenu-padding !default;
-
-/// Sets if accordion menus have the default arrow styles.
-/// @type Boolean
-$accordionmenu-arrows: true !default;
-
-/// Sets accordion menu arrow color if arrow is used.
-/// @type Color
-$accordionmenu-arrow-color: color.$primary-color !default;
-
-/// Sets accordion menu item padding.
-/// @type Color
-$accordionmenu-item-background: null !default;
-
-/// Sets accordion menu item border.
-/// @type Color
-$accordionmenu-border: null !default;
-
-/// Sets accordion menu item padding.
-/// @type Color
-$accordionmenu-submenu-toggle-background: null !default;
-
-/// Sets accordion menu item padding.
-/// @type List
-$accordion-submenu-toggle-border: $accordionmenu-border !default;
-
-/// Sets accordion menu submenu toggle background width.
-/// @type Number
-$accordionmenu-submenu-toggle-width: 40px !default;
-
-/// Sets accordion menu submenu toggle background height.
-/// @type Number
-$accordionmenu-submenu-toggle-height: $accordionmenu-submenu-toggle-width !default;
-
-/// Sets accordion menu arrow size if arrow is used.
-/// @type Length
-$accordionmenu-arrow-size: 6px !default;
 
 @mixin zf-accordion-menu-left-right-arrows {
+	@include settings.configure();
   .is-accordion-submenu-parent:not(.has-submenu-toggle) > a {
     position: relative;
 
     &::after {
-      @include mixins.css-triangle($accordionmenu-arrow-size, $accordionmenu-arrow-color, down);
+      @include mixins.css-triangle(settings.$accordionmenu-arrow-size, settings.$accordionmenu-arrow-color, down);
       position: absolute;
       top: 50%;
-      margin-top: -1 * ($accordionmenu-arrow-size / 2);
-      #{global.$global-right}: 1rem;
+      margin-top: -1 * (settings.$accordionmenu-arrow-size / 2);
+      #{settings.$global-right}: 1rem;
     }
   }
 
@@ -79,43 +34,43 @@ $accordionmenu-arrow-size: 6px !default;
   }
 }
 @mixin foundation-accordion-menu {
-
+@include settings.configure();
   .accordion-menu {
-    @if $accordionmenu-border {
-      border-bottom: $accordionmenu-border;
+    @if settings.$accordionmenu-border {
+      border-bottom: settings.$accordionmenu-border;
     }
 
     li {
-      @if $accordionmenu-border {
-        border-top: $accordionmenu-border;
-        border-right: $accordionmenu-border;
-        border-left: $accordionmenu-border;
+      @if settings.$accordionmenu-border {
+        border-top: settings.$accordionmenu-border;
+        border-right: settings.$accordionmenu-border;
+        border-left: settings.$accordionmenu-border;
       }
       width: 100%;
     }
 
     a {
-      @if $accordionmenu-item-background {
-        background: $accordionmenu-item-background;
+      @if settings.$accordionmenu-item-background {
+        background: settings.$accordionmenu-item-background;
       }
-      padding: $accordionmenu-padding;
+      padding: settings.$accordionmenu-padding;
     }
 
     .is-accordion-submenu a {
-      padding: $accordionmenu-submenu-padding;
+      padding: settings.$accordionmenu-submenu-padding;
     }
 
     .nested.is-accordion-submenu {
-      @include menu.menu-nested($accordionmenu-nested-margin);
+      @include menu.menu-nested(settings.$accordionmenu-nested-margin);
     }
 
-    &.align-#{global.$global-right} {
+    &.align-#{settings.$global-right} {
       .nested.is-accordion-submenu {
-        @include menu.menu-nested($accordionmenu-nested-margin, right);
+        @include menu.menu-nested(settings.$accordionmenu-nested-margin, right);
       }
     }
 
-    @if $accordionmenu-arrows {
+    @if settings.$accordionmenu-arrows {
       @include zf-accordion-menu-left-right-arrows;
 
       .is-accordion-submenu-parent[aria-expanded='true'] > a::after {
@@ -126,7 +81,7 @@ $accordionmenu-arrow-size: 6px !default;
   }
 
   .is-accordion-submenu li {
-    @if $accordionmenu-border {
+    @if settings.$accordionmenu-border {
       border-right: 0;
       border-left: 0;
     }
@@ -137,29 +92,29 @@ $accordionmenu-arrow-size: 6px !default;
   }
 
   .has-submenu-toggle > a {
-    margin-#{global.$global-right}: $accordionmenu-submenu-toggle-width;
+    margin-#{settings.$global-right}: settings.$accordionmenu-submenu-toggle-width;
   }
 
   // Submenu toggle
   .submenu-toggle {
     position: absolute;
     top: 0;
-    #{global.$global-right}: 0;
+    #{settings.$global-right}: 0;
 
-    width: $accordionmenu-submenu-toggle-width;
-    height: $accordionmenu-submenu-toggle-height;
+    width: settings.$accordionmenu-submenu-toggle-width;
+    height: settings.$accordionmenu-submenu-toggle-height;
 
     cursor: pointer;
 
-    border-#{global.$global-left}: $accordion-submenu-toggle-border;
+    border-#{settings.$global-left}: settings.$accordion-submenu-toggle-border;
 
-    @if $accordionmenu-submenu-toggle-background {
-      background: $accordionmenu-submenu-toggle-background;
+    @if settings.$accordionmenu-submenu-toggle-background {
+      background: settings.$accordionmenu-submenu-toggle-background;
     }
 
     // Add the arrow to the toggle
     &::after {
-      @include mixins.css-triangle(6px, $accordionmenu-arrow-color, down);
+      @include mixins.css-triangle(6px, settings.$accordionmenu-arrow-color, down);
 
       top: 0;
       bottom: 0;
